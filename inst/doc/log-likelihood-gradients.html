@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>log-likelihood-gradients</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">log-likelihood-gradients</h1>
+
+
+
+<div id="ableitung-der-log-likelihood" class="section level1">
+<h1>Ableitung der Log-Likelihood</h1>
+<p><span class="math display">\[L(\pmb\theta) =
+\underbrace{k\ln(2\pi)}_{1} +
+\underbrace{\ln(|\pmb\Sigma(\pmb\theta)|)}_{2} +  \underbrace{(\pmb x -
+\pmb \mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta))}_{3}\]</span></p>
+<p>Wir wollen nach <span class="math inline">\(\pmb \theta\)</span>
+ableiten.</p>
+<div id="element-1" class="section level2">
+<h2>Element 1</h2>
+<p>Es gilt <span class="math inline">\(\frac{\partial}{\partial
+\theta_j} k\ln(2\pi)= 0\)</span></p>
+</div>
+<div id="element-2" class="section level2">
+<h2>Element 2</h2>
+<p>Es gilt:</p>
+<p><span class="math display">\[\frac{\partial}{\partial
+\theta_j}\ln(|\pmb\Sigma(\pmb\theta)|) =
+\frac{1}{|\pmb\Sigma(\pmb\theta)|}\frac{\partial}{\partial
+\theta_j}|\pmb\Sigma(\pmb\theta)|\]</span></p>
+<p><a href="https://en.wikipedia.org/wiki/Jacobi%27s_formula">Jacobis
+Formel</a>:</p>
+<p><span class="math display">\[\frac{\partial}{\partial
+\theta_j}|\pmb\Sigma(\pmb\theta)| =
+|\pmb\Sigma(\pmb\theta)|tr(\pmb\Sigma(\pmb\theta)^{-1}\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta))\]</span> und somit:</p>
+<p><span class="math display">\[\frac{\partial}{\partial
+\theta_j}\ln(|\pmb\Sigma(\pmb\theta)|) =
+\frac{1}{|\pmb\Sigma(\pmb\theta)|}|\pmb\Sigma(\pmb\theta)|tr(\pmb\Sigma(\pmb\theta)^{-1}\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta)) =
+tr(\pmb\Sigma(\pmb\theta)^{-1}\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta))\]</span></p>
+<p>Wir brauchen also die Ableitung der modell-implizierten
+Kovarianzmatrix nach den Parametern: <span class="math inline">\(\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta)\)</span>. Dabei gilt: <span class="math inline">\(\pmb\Sigma(\pmb\theta) = \pmb F (\pmb I - \pmb
+A)^{-1} \pmb S ((\pmb I - \pmb A)^{-1})^T \pmb F^T\)</span>.</p>
+<div id="fall-1-der-parameter-theta_j-ist-in-pmb-s." class="section level3">
+<h3>Fall 1: Der Parameter <span class="math inline">\(\theta_j\)</span>
+ist in <span class="math inline">\(\pmb S\)</span>.</h3>
+<p>Dann gilt: Außer <span class="math inline">\(\pmb S\)</span> kann
+alles andere als Konstante behandelt werden. Es folgt:</p>
+<p><span class="math display">\[\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta) = \pmb F (\pmb I - \pmb A)^{-1}
+\frac{\partial}{\partial \theta_j}\pmb S ((\pmb I - \pmb A)^{-1})^T \pmb
+F^T\]</span> wobei <span class="math inline">\(\frac{\partial}{\partial
+\theta_j}\pmb S\)</span> eine sparse Matrix mit einsen an den Stellen
+ist, an denen <span class="math inline">\(\theta_j\)</span>
+vorkommt.</p>
+<p>Zusammenfassung:</p>
+<p><span class="math display">\[\frac{\partial}{\partial
+\theta_j}\ln(|\pmb\Sigma(\pmb\theta)|) =
+tr(\pmb\Sigma(\pmb\theta)^{-1}\pmb F (\pmb I - \pmb A)^{-1}
+\frac{\partial}{\partial \theta_j}\pmb S ((\pmb I - \pmb A)^{-1})^T \pmb
+F^T)\]</span></p>
+<p><strong>Achtung</strong>: Wenn die Person Missings hat, kann man die
+Matrix <span class="math inline">\(\pmb F\)</span> so anpassen, dass die
+entsprechenden Zeilen und Spalten herausfallen.</p>
+</div>
+<div id="fall-2-der-parameter-theta_j-ist-in-pmb-a." class="section level3">
+<h3>Fall 2: Der Parameter <span class="math inline">\(\theta_j\)</span>
+ist in <span class="math inline">\(\pmb A\)</span>.</h3>
+<p>Dann gilt: Außer <span class="math inline">\(\pmb A\)</span> kann
+alles andere als Konstante behandelt werden. Zudem gilt: <span class="math inline">\(\frac{\partial}{\partial a_i}\pmb A^{-1} = \pmb
+A^{-1}\frac{\partial \pmb A}{\partial a_i} \pmb A^{-1}\)</span> (<a href="https://math.stackexchange.com/questions/4074265/derivative-involving-inverse-matrix?noredirect=1&amp;lq=1" class="uri">https://math.stackexchange.com/questions/4074265/derivative-involving-inverse-matrix?noredirect=1&amp;lq=1</a>).
+Es folgt:</p>
+<p><span class="math display">\[\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta) = \pmb F[(\pmb I - \pmb A)^{-1}
+\frac{\partial\pmb A}{\partial \theta_j}(\pmb I - \pmb A)^{-1}][\pmb S
+((\pmb I - \pmb A)^{-1})^T \pmb F^T] + \pmb F(\pmb I - \pmb A)^{-1} \pmb
+S[(\pmb I - \pmb A)^{-1} \frac{\partial\pmb A}{\partial \theta_j}(\pmb I
+- \pmb A)^{-1}]^T\pmb F^T\]</span></p>
+<p>Zusammenfassung:</p>
+<p><span class="math display">\[\frac{\partial}{\partial
+\theta_j}\ln(|\pmb\Sigma(\pmb\theta)|) =
+tr(\pmb\Sigma(\pmb\theta)^{-1}[\pmb F[(\pmb I - \pmb A)^{-1}
+\frac{\partial\pmb A}{\partial \theta_j}(\pmb I - \pmb A)^{-1}][\pmb S
+((\pmb I - \pmb A)^{-1})^T \pmb F^T] + \pmb F(\pmb I - \pmb A)^{-1} \pmb
+S[(\pmb I - \pmb A)^{-1} \frac{\partial\pmb A}{\partial \theta_j}(\pmb I
+- \pmb A)^{-1}]^T\pmb F^T])\]</span></p>
+</div>
+<div id="fall-3-der-parameter-theta_j-ist-in-pmb-m-wobei-pmb-m-die-mittelwertstruktur-des-sem-ist." class="section level3">
+<h3>Fall 3: Der Parameter <span class="math inline">\(\theta_j\)</span>
+ist in <span class="math inline">\(\pmb m\)</span>, wobei <span class="math inline">\(\pmb m\)</span> die Mittelwertstruktur des SEM
+ist.</h3>
+<p>Dann gilt: Die Ableitung ist <span class="math inline">\(0\)</span>.</p>
+<p><strong>Hinweis</strong>: Element 2 ist unabhängig vom Datensatz!</p>
+</div>
+</div>
+<div id="element-3" class="section level2">
+<h2>Element 3</h2>
+<p><span class="math display">\[\frac{\partial}{\partial \theta_j}(\pmb
+x - \pmb \mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta))\]</span></p>
+<p>Es gilt:</p>
+<p><span class="math display">\[\begin{aligned}
+&amp;\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta))\\
+=&amp; [\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T]\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta)) + (\pmb x - \pmb
+\mu(\pmb\theta))^T\frac{\partial}{\partial
+\theta_j}[\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb \mu(\pmb\theta))] \\
+=&amp; [\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T]\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta)) + (\pmb x - \pmb
+\mu(\pmb\theta))^T[\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta)^{-1}](\pmb x - \pmb \mu(\pmb\theta)) +
+(\pmb x - \pmb
+\mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}\frac{\partial}{\partial
+\theta_j}[(\pmb x - \pmb \mu(\pmb\theta))]
+\end{aligned}\]</span></p>
+<p>mit <span class="math inline">\(\pmb\mu (\pmb\theta) = \pmb F(\pmb I
+- \pmb A)^{-1}\pmb m\)</span> wobei <span class="math inline">\(\pmb
+m\)</span> die Mittelwertstruktur des SEMs ist.</p>
+<div id="fall-1-der-parameter-theta_j-ist-in-pmb-s.-1" class="section level3">
+<h3>Fall 1: Der Parameter <span class="math inline">\(\theta_j\)</span>
+ist in <span class="math inline">\(\pmb S\)</span>.</h3>
+<p>Dann gilt: Außer <span class="math inline">\(\pmb S\)</span> kann
+alles andere als Konstante behandelt werden. Es folgt: <span class="math inline">\([\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T] = 0\)</span> und somit</p>
+<p><span class="math display">\[\begin{aligned}
+&amp;[\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T]\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta)) + (\pmb x - \pmb
+\mu(\pmb\theta))^T[\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta)^{-1}](\pmb x - \pmb \mu(\pmb\theta)) +
+(\pmb x - \pmb
+\mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}\frac{\partial}{\partial
+\theta_j}[(\pmb x - \pmb \mu(\pmb\theta))] \\
+=&amp;(\pmb x - \pmb \mu(\pmb\theta))^T[\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta)^{-1}](\pmb x - \pmb \mu(\pmb\theta))
+\end{aligned}\]</span></p>
+<p>Es gilt (<a href="https://math.stackexchange.com/questions/4074265/derivative-involving-inverse-matrix?noredirect=1&amp;lq=1" class="uri">https://math.stackexchange.com/questions/4074265/derivative-involving-inverse-matrix?noredirect=1&amp;lq=1</a>):
+<span class="math display">\[\frac{\partial}{\partial \theta_j} \pmb
+\Sigma(\pmb\theta)^{-1} = -\pmb
+\Sigma(\pmb\theta)^{-1}\frac{\partial}{\partial \theta_j}\pmb
+\Sigma(\pmb\theta)\Sigma(\pmb\theta)^{-1}\]</span> und somit:</p>
+<p><span class="math display">\[\begin{aligned}
+&amp;\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta))\\
+=&amp;(\pmb x - \pmb \mu(\pmb\theta))^T[\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta)^{-1}](\pmb x - \pmb \mu(\pmb\theta))\\
+=&amp; (\pmb x - \pmb \mu(\pmb\theta))^T[-\pmb
+\Sigma(\pmb\theta)^{-1}\frac{\partial}{\partial \theta_j}\pmb
+\Sigma(\pmb\theta)\Sigma(\pmb\theta)^{-1}](\pmb x - \pmb
+\mu(\pmb\theta))\\
+=&amp; (\pmb x - \pmb \mu(\pmb\theta))^T[-\pmb
+\Sigma(\pmb\theta)^{-1}\pmb F (\pmb I - \pmb A)^{-1}
+\frac{\partial}{\partial \theta_j}\pmb S ((\pmb I - \pmb A)^{-1})^T \pmb
+F^T\pmb\Sigma(\pmb\theta)^{-1}](\pmb x - \pmb \mu(\pmb\theta))\\
+\end{aligned}\]</span></p>
+<p>Hinweis: Der letzte Schritt wurde bei <em>Element 2</em>
+besprochen.</p>
+</div>
+<div id="fall-2-der-parameter-theta_j-ist-in-pmb-a.-1" class="section level3">
+<h3>Fall 2: Der Parameter <span class="math inline">\(\theta_j\)</span>
+ist in <span class="math inline">\(\pmb A\)</span>.</h3>
+<p><span class="math inline">\(\pmb A\)</span> findet sich auch in der
+Mittelwertstruktur wieder. Hier gilt</p>
+<p><span class="math display">\[\begin{aligned}
+&amp;\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta))\\
+=&amp; [\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T]\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta)) + (\pmb x - \pmb
+\mu(\pmb\theta))^T[\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta)^{-1}](\pmb x - \pmb \mu(\pmb\theta)) +
+(\pmb x - \pmb
+\mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}\frac{\partial}{\partial
+\theta_j}[(\pmb x - \pmb \mu(\pmb\theta))]
+\end{aligned}\]</span></p>
+<p>mit <span class="math inline">\([\frac{\partial}{\partial
+\theta_j}(\pmb x - \pmb \mu(\pmb\theta))] = [- \frac{\partial}{\partial
+\theta_j}\pmb \mu(\pmb\theta))] = -\frac{\partial}{\partial
+\theta_j}\pmb F(\pmb I - \pmb A)^{-1}\pmb m = -\pmb F(\pmb I - \pmb
+A)^{-1}\frac{\partial (\pmb I - \pmb A)}{\partial \theta_j}(\pmb I -
+\pmb A)^{-1}\pmb m\)</span></p>
+<p>Es folgt: <span class="math display">\[\begin{aligned}
+&amp;\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta))\\
+=&amp; 2*[-\pmb F(\pmb I - \pmb A)^{-1}\frac{\partial (\pmb I - \pmb
+A)}{\partial \theta_j}(\pmb I - \pmb A)^{-1}\pmb
+m]^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb \mu(\pmb\theta)) + (\pmb x
+- \pmb \mu(\pmb\theta))^T[\frac{\partial}{\partial
+\theta_j}\pmb\Sigma(\pmb\theta)^{-1}](\pmb x - \pmb \mu(\pmb\theta))\\
+=&amp; 2*[-\pmb F(\pmb I - \pmb A)^{-1}\frac{\partial (\pmb I - \pmb
+A)}{\partial \theta_j}(\pmb I - \pmb A)^{-1}\pmb
+m]^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb \mu(\pmb\theta)) \\
+&amp;+ (\pmb x - \pmb \mu(\pmb\theta))^T[-\pmb
+\Sigma(\pmb\theta)^{-1}[\pmb F[(\pmb I - \pmb A)^{-1} \frac{\partial\pmb
+A}{\partial \theta_j}(\pmb I - \pmb A)^{-1}][\pmb S ((\pmb I - \pmb
+A)^{-1})^T \pmb F^T] \\
+&amp;+ \pmb F(\pmb I - \pmb A)^{-1} \pmb S[(\pmb I - \pmb A)^{-1}
+\frac{\partial\pmb A}{\partial \theta_j}(\pmb I - \pmb A)^{-1}]^T\pmb
+F^T]\pmb \Sigma(\pmb\theta)^{-1}](\pmb x - \pmb \mu(\pmb\theta))\\
+\end{aligned}\]</span></p>
+<p>Hinweis: Der letzte Schritt wurde bei <em>Element 3</em>
+besprochen.</p>
+</div>
+<div id="fall-3-der-parameter-theta_j-ist-in-pmb-m." class="section level3">
+<h3>Fall 3: Der Parameter <span class="math inline">\(\theta_j\)</span>
+ist in <span class="math inline">\(\pmb m\)</span>.</h3>
+<p>Dann gilt: Außer <span class="math inline">\(\pmb\mu (\pmb\theta) =
+\pmb F(\pmb I - \pmb A)^{-1}\pmb m\)</span> kann alles andere als
+Konstante behandelt werden.</p>
+<p><span class="math display">\[\begin{aligned}
+&amp;\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta))\\
+=&amp; [\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T]\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta)) + (\pmb x - \pmb
+\mu(\pmb\theta))^T\frac{\partial}{\partial
+\theta_j}[\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb \mu(\pmb\theta))] \\
+=&amp; [\frac{\partial}{\partial \theta_j}(\pmb x - \pmb
+\mu(\pmb\theta))^T]\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb
+\mu(\pmb\theta)) + (\pmb x - \pmb
+\mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}\frac{\partial}{\partial
+\theta_j}[(\pmb x - \pmb \mu(\pmb\theta))] \\
+=&amp; (-\pmb F(\pmb I - \pmb A)^{-1}\pmb
+e)^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb \mu(\pmb\theta)) + (\pmb x
+- \pmb \mu(\pmb\theta))^T\pmb\Sigma(\pmb\theta)^{-1}(-\pmb F(\pmb I -
+\pmb A)^{-1}\pmb e)\\
+=&amp; 2*(- \pmb F(\pmb I - \pmb A)^{-1}\pmb
+e)^T\pmb\Sigma(\pmb\theta)^{-1}(\pmb x - \pmb \mu(\pmb\theta))
+\end{aligned}\]</span> wobei <span class="math inline">\(\pmb e =
+\begin{bmatrix} 0 &amp; 0 &amp; ... &amp; 1 &amp; ...
+&amp;0\end{bmatrix}^T\)</span> ein Vektor ist, der eine eins an der
+Stelle hat, an der <span class="math inline">\(\theta_j\)</span> in
+<span class="math inline">\(\pmb m\)</span> sitzt.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
