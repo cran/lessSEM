@@ -344,7 +344,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p><strong>This is an experimental feature. There may be bugs; use
 carefully!</strong></p>
 </blockquote>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lessSEM)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(lessSEM)</span></code></pre></div>
 <p>The <code>mixedPenalty</code> function allows you to add multiple
 penalties to a single model. For instance, you may want to regularize
 both loadings and regressions in a SEM. In this case, using the same
@@ -357,9 +357,9 @@ multi-group models (Geminiani et al., 2021).</p>
 <blockquote>
 <p>Important: You cannot impose two penalties on the same parameter!</p>
 </blockquote>
-<p>Not all penalty combinations are currently supported by all
-optimizers. The following table provides an overview of the penalties
-you can use with each optimizer:</p>
+<p>Models are fitted with the glmnet or ista optimizer. Note that the
+optimizers differ in which penalties they support. The following table
+provides an overview:</p>
 <table>
 <thead>
 <tr class="header">
@@ -371,262 +371,223 @@ you can use with each optimizer:</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td>ridge</td>
-<td>addRidge</td>
-<td>x</td>
-<td>-</td>
-</tr>
-<tr class="even">
 <td>lasso</td>
 <td>addLasso</td>
 <td>x</td>
 <td>x</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>elastic net</td>
 <td>addElasticNet</td>
-<td>x</td>
+<td>x*</td>
 <td>-</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>cappedL1</td>
 <td>addCappedL1</td>
-<td>-</td>
 <td>x</td>
-</tr>
-<tr class="odd">
-<td>lsp</td>
-<td>addLsp</td>
-<td>-</td>
 <td>x</td>
 </tr>
 <tr class="even">
-<td>scad</td>
-<td>addScad</td>
-<td>-</td>
+<td>lsp</td>
+<td>addLsp</td>
+<td>x</td>
 <td>x</td>
 </tr>
 <tr class="odd">
+<td>scad</td>
+<td>addScad</td>
+<td>x</td>
+<td>x</td>
+</tr>
+<tr class="even">
 <td>mcp</td>
 <td>addMcp</td>
-<td>-</td>
+<td>x</td>
 <td>x</td>
 </tr>
 </tbody>
 </table>
+<p>By default, glmnet will be used. Note that the elastic net penalty
+can only be combined with other elastic net penalties.</p>
 <div id="getting-started" class="section level2">
 <h2>Getting Started</h2>
 <p>In the following model, we will allow for cross-loadings
 (<code>c2</code>-<code>c4</code>). We want to regularize both,
 cross-loadings and regression coefficients (<code>r1</code> -
 <code>r3</code>)</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3 + c2*y2 + c3*y3 + c4*y4</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="st">     dem60 =~ y1 + y2 + y3 + y4</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="st">     dem65 =~ y5 + y6 + y7 + c*y8</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="st">  # regressions</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="st">    dem60 ~ r1*ind60</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="st">    dem65 ~ r2*ind60 + r3*dem60</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">sem</span>(model,</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> PoliticalDemocracy)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3 + c2*y2 + c3*y3 + c4*y4</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="st">     dem60 =~ y1 + y2 + y3 + y4</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="st">     dem65 =~ y5 + y6 + y7 + c*y8</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="st">  # regressions</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="st">    dem60 ~ r1*ind60</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="st">    dem65 ~ r2*ind60 + r3*dem60</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="st">&#39;</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">sem</span>(model,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>                   <span class="at">data =</span> PoliticalDemocracy)</span></code></pre></div>
 <p>Next, we add separate lasso penalties for the loadings and the
 regressions:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mp <span class="ot">&lt;-</span> lavaanModel <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mixedPenalty</span>() <span class="sc">|&gt;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;c2&quot;</span>, <span class="st">&quot;c3&quot;</span>, <span class="st">&quot;c4&quot;</span>), </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;r1&quot;</span>, <span class="st">&quot;r2&quot;</span>, <span class="st">&quot;r3&quot;</span>), </span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>)) </span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Note</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; • Mixed penalties is a very new feature. Please note that there may still </span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; • be bugs in the procedure. Use carefully!</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>mp <span class="ot">&lt;-</span> lavaanModel <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">mixedPenalty</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;c2&quot;</span>, <span class="st">&quot;c3&quot;</span>, <span class="st">&quot;c4&quot;</span>), </span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;r1&quot;</span>, <span class="st">&quot;r2&quot;</span>, <span class="st">&quot;r3&quot;</span>), </span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>)) </span></code></pre></div>
 <p>Note that we can use the pipe-operator to add multiple penalties.
 They don’t have to be the same; the following would also work:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mp <span class="ot">&lt;-</span> lavaanModel <span class="sc">|&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mixedPenalty</span>() <span class="sc">|&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;c2&quot;</span>, <span class="st">&quot;c3&quot;</span>, <span class="st">&quot;c4&quot;</span>), </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addScad</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;r1&quot;</span>, <span class="st">&quot;r2&quot;</span>, <span class="st">&quot;r3&quot;</span>), </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>),</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">thetas =</span> <span class="fl">3.7</span>) </span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Note</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; • Mixed penalties is a very new feature. Please note that there may still </span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; • be bugs in the procedure. Use carefully!</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>mp <span class="ot">&lt;-</span> lavaanModel <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">mixedPenalty</span>() <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;c2&quot;</span>, <span class="st">&quot;c3&quot;</span>, <span class="st">&quot;c4&quot;</span>), </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="fu">addScad</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;r1&quot;</span>, <span class="st">&quot;r2&quot;</span>, <span class="st">&quot;r3&quot;</span>), </span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>          <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>),</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>          <span class="at">thetas =</span> <span class="fl">3.7</span>) </span></code></pre></div>
 <p>To fit the model, we use the <code>fit</code>- function:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fitMp <span class="ot">&lt;-</span> <span class="fu">fit</span>(mp)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>fitMp <span class="ot">&lt;-</span> <span class="fu">fit</span>(mp)</span></code></pre></div>
 <p>To check which parameter has be regularized with which penalty, we
 can look at the <code>penalty</code> statement in the resulting
 object:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fitMp<span class="sc">@</span>penalty</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    ind60=~x2    ind60=~x3           c2           c3           c4    dem60=~y2 </span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       &quot;none&quot;       &quot;none&quot;      &quot;lasso&quot;      &quot;lasso&quot;      &quot;lasso&quot;       &quot;none&quot; </span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    dem60=~y3    dem60=~y4    dem65=~y6    dem65=~y7            c           r1 </span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;scad&quot; </span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           r2           r3       x1~~x1       x2~~x2       x3~~x3       y2~~y2 </span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       &quot;scad&quot;       &quot;scad&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot; </span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       y3~~y3       y4~~y4       y1~~y1       y5~~y5       y6~~y6       y7~~y7 </span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot; </span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65 </span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>fitMp<span class="sc">@</span>penalty</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;    ind60=~x2    ind60=~x3           c2           c3           c4    dem60=~y2    dem60=~y3    dem60=~y4    dem65=~y6 </span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;       &quot;none&quot;       &quot;none&quot;      &quot;lasso&quot;      &quot;lasso&quot;      &quot;lasso&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot; </span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt;    dem65=~y7            c           r1           r2           r3       x1~~x1       x2~~x2       x3~~x3       y2~~y2 </span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;       &quot;none&quot;       &quot;none&quot;       &quot;scad&quot;       &quot;scad&quot;       &quot;scad&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot; </span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;       y3~~y3       y4~~y4       y1~~y1       y5~~y5       y6~~y6       y7~~y7       y8~~y8 ind60~~ind60 dem60~~dem60 </span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot;       &quot;none&quot; </span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; dem65~~dem65 </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;       &quot;none&quot;</span></span></code></pre></div>
 <p>We can access the best parameters according to the BIC with:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fitMp, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                 </span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        Tuning ||--||  Estimates                                 </span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------------------------- ||--|| ---------- ---------- ---------- ----------</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tuningParameterConfiguration ||--||  ind60=~x2  ind60=~x3         c2         c3</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ============================ ||--|| ========== ========== ========== ==========</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       11.0000 ||--||     2.1818     1.8188          .          .</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          c4  dem60=~y2  dem60=~y3  dem60=~y4  dem65=~y6  dem65=~y7          c         r1</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     1.3541     1.0441     1.2997     1.2586     1.2825     1.3099     1.4740</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          r2         r3     x1~~x1     x2~~x2     x3~~x3     y2~~y2     y3~~y3     y4~~y4</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      0.4532     0.8643     0.0818     0.1184     0.4672     6.4892     5.3396     2.8861</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                  </span></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                  </span></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ------------ ------------</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      y1~~y1     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60</span></span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ============ ============</span></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      1.9420     2.3904     4.3421     3.5090     2.9392       0.4482       3.8710</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              </span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              </span></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------------</span></span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dem65~~dem65</span></span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ============</span></span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        0.1159</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">coef</span>(fitMp, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                             </span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt;                        Tuning ||--||  Estimates                                                                             </span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt;  ---------------------------- ||--|| ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt;  tuningParameterConfiguration ||--||  ind60=~x2  ind60=~x3         c2         c3         c4  dem60=~y2  dem60=~y3  dem60=~y4</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt;  ============================ ||--|| ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt;                       11.0000 ||--||     2.1817     1.8188          .          .          .     1.3540     1.0440     1.2995</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt;   dem65=~y6  dem65=~y7          c         r1         r2         r3     x1~~x1     x2~~x2     x3~~x3     y2~~y2     y3~~y3</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt;      1.2585     1.2825     1.3098     1.4738     0.4533     0.8644     0.0818     0.1184     0.4673     6.4896     5.3399</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                          </span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                          </span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ------------ ------------ ------------</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y1~~y1     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ============ ============ ============</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt;      2.8871     1.9419     2.3901     4.3428     3.5096     2.9403       0.4482       3.8717       0.1149</span></span></code></pre></div>
 <p>The <code>tuningParameterConfiguration</code> refers to the rows in
 the lambda, theta, and alpha matrices that resulted in the best fit:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getTuningParameterConfiguration</span>(<span class="at">regularizedSEMMixedPenalty =</span> fitMp, </span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>                                <span class="at">tuningParameterConfiguration =</span> <span class="dv">11</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 parameter penalty lambda theta alpha</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ind60=~x2       ind60=~x2    none      0   0.0     0</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ind60=~x3       ind60=~x3    none      0   0.0     0</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c2                     c2   lasso      1   0.0     0</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c3                     c3   lasso      1   0.0     0</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c4                     c4   lasso      1   0.0     0</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem60=~y2       dem60=~y2    none      0   0.0     0</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem60=~y3       dem60=~y3    none      0   0.0     0</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem60=~y4       dem60=~y4    none      0   0.0     0</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem65=~y6       dem65=~y6    none      0   0.0     0</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem65=~y7       dem65=~y7    none      0   0.0     0</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c                       c    none      0   0.0     0</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; r1                     r1    scad      0   3.7     0</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; r2                     r2    scad      0   3.7     0</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; r3                     r3    scad      0   3.7     0</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x1~~x1             x1~~x1    none      0   0.0     0</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x2~~x2             x2~~x2    none      0   0.0     0</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x3~~x3             x3~~x3    none      0   0.0     0</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y2~~y2             y2~~y2    none      0   0.0     0</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y3~~y3             y3~~y3    none      0   0.0     0</span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y4~~y4             y4~~y4    none      0   0.0     0</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y1~~y1             y1~~y1    none      0   0.0     0</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y5~~y5             y5~~y5    none      0   0.0     0</span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y6~~y6             y6~~y6    none      0   0.0     0</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y7~~y7             y7~~y7    none      0   0.0     0</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y8~~y8             y8~~y8    none      0   0.0     0</span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ind60~~ind60 ind60~~ind60    none      0   0.0     0</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem60~~dem60 dem60~~dem60    none      0   0.0     0</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem65~~dem65 dem65~~dem65    none      0   0.0     0</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">getTuningParameterConfiguration</span>(<span class="at">regularizedSEMMixedPenalty =</span> fitMp, </span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>                                <span class="at">tuningParameterConfiguration =</span> <span class="dv">11</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt;                 parameter penalty lambda alpha</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; ind60=~x2       ind60=~x2    none      0     0</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; ind60=~x3       ind60=~x3    none      0     0</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; c2                     c2   lasso      1     1</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; c3                     c3   lasso      1     1</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; c4                     c4   lasso      1     1</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; dem60=~y2       dem60=~y2    none      0     0</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; dem60=~y3       dem60=~y3    none      0     0</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; dem60=~y4       dem60=~y4    none      0     0</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; dem65=~y6       dem65=~y6    none      0     0</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; dem65=~y7       dem65=~y7    none      0     0</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; c                       c    none      0     0</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; r1                     r1    scad      0     0</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; r2                     r2    scad      0     0</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; r3                     r3    scad      0     0</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; x1~~x1             x1~~x1    none      0     0</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; x2~~x2             x2~~x2    none      0     0</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; x3~~x3             x3~~x3    none      0     0</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; y2~~y2             y2~~y2    none      0     0</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt; y3~~y3             y3~~y3    none      0     0</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; y4~~y4             y4~~y4    none      0     0</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; y1~~y1             y1~~y1    none      0     0</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; y5~~y5             y5~~y5    none      0     0</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; y6~~y6             y6~~y6    none      0     0</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; y7~~y7             y7~~y7    none      0     0</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; y8~~y8             y8~~y8    none      0     0</span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; ind60~~ind60 ind60~~ind60    none      0     0</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; dem60~~dem60 dem60~~dem60    none      0     0</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; dem65~~dem65 dem65~~dem65    none      0     0</span></span></code></pre></div>
 <p>In this case, the best model has no cross-loadings, but the
 regressions remained unregularized: The lambda for the cross-loadings is
 large (1), while the lambda for the regressions is 0 (no
 regularization).</p>
 </div>
-<div id="using-glmnet" class="section level2">
-<h2>Using glmnet</h2>
+<div id="using-ista" class="section level2">
+<h2>Using ista</h2>
 <p>The glmnet optimizer is typically considerably faster than ista.
-However, as mentioned above, not all penalty functions are currently
-supported. Mixed penalties for glmnet can be specified as follows:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mp <span class="ot">&lt;-</span> lavaanModel <span class="sc">|&gt;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Change the optimizer and the control object:</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mixedPenalty</span>(<span class="at">method =</span> <span class="st">&quot;glmnet&quot;</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">control =</span> <span class="fu">controlGlmnet</span>()) <span class="sc">|&gt;</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;c2&quot;</span>, <span class="st">&quot;c3&quot;</span>, <span class="st">&quot;c4&quot;</span>), </span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;r1&quot;</span>, <span class="st">&quot;r2&quot;</span>, <span class="st">&quot;r3&quot;</span>), </span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>                <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>)) </span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Note</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; • Mixed penalties is a very new feature. Please note that there may still </span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; • be bugs in the procedure. Use carefully!</span></span></code></pre></div>
+However, sometimes glmnet may run into issues. In that case, it can help
+to switch to ista:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>mp <span class="ot">&lt;-</span> lavaanModel <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="co"># Change the optimizer and the control object:</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="fu">mixedPenalty</span>(<span class="at">method =</span> <span class="st">&quot;ista&quot;</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>               <span class="at">control =</span> <span class="fu">controlIsta</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;c2&quot;</span>, <span class="st">&quot;c3&quot;</span>, <span class="st">&quot;c4&quot;</span>), </span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>                <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;r1&quot;</span>, <span class="st">&quot;r2&quot;</span>, <span class="st">&quot;r3&quot;</span>), </span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>                <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>)) </span></code></pre></div>
 <p>To fit the model, we use the <code>fit</code>- function:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fitMp <span class="ot">&lt;-</span> <span class="fu">fit</span>(mp)</span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fitMp, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                 </span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                        Tuning ||--||  Estimates                                 </span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------------------------- ||--|| ---------- ---------- ---------- ----------</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  tuningParameterConfiguration ||--||  ind60=~x2  ind60=~x3         c2         c3</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ============================ ||--|| ========== ========== ========== ==========</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       11.0000 ||--||     2.1817     1.8188          .          .</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          c4  dem60=~y2  dem60=~y3  dem60=~y4  dem65=~y6  dem65=~y7          c         r1</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     1.3540     1.0440     1.2995     1.2585     1.2825     1.3098     1.4738</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          r2         r3     x1~~x1     x2~~x2     x3~~x3     y2~~y2     y3~~y3     y4~~y4</span></span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      0.4532     0.8644     0.0818     0.1184     0.4673     6.4896     5.3399     2.8871</span></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                  </span></span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                  </span></span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ------------ ------------</span></span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      y1~~y1     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60</span></span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ============ ============</span></span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      1.9419     2.3901     4.3429     3.5095     2.9402       0.4481       3.8717</span></span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              </span></span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              </span></span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------------</span></span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dem65~~dem65</span></span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ============</span></span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        0.1149</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>fitMp <span class="ot">&lt;-</span> <span class="fu">fit</span>(mp)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">coef</span>(fitMp, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                             </span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt;                        Tuning ||--||  Estimates                                                                             </span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt;  ---------------------------- ||--|| ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt;  tuningParameterConfiguration ||--||  ind60=~x2  ind60=~x3         c2         c3         c4  dem60=~y2  dem60=~y3  dem60=~y4</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt;  ============================ ||--|| ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt;                       11.0000 ||--||     2.1818     1.8188          .          .          .     1.3541     1.0441     1.2997</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt;   dem65=~y6  dem65=~y7          c         r1         r2         r3     x1~~x1     x2~~x2     x3~~x3     y2~~y2     y3~~y3</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt;      1.2586     1.2825     1.3099     1.4740     0.4532     0.8643     0.0818     0.1184     0.4672     6.4892     5.3396</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                          </span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                          </span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ------------ ------------ ------------</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y1~~y1     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65</span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ============ ============ ============</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="co">#&gt;      2.8861     1.9420     2.3904     4.3421     3.5090     2.9392       0.4482       3.8710       0.1159</span></span></code></pre></div>
 <p>The <code>tuningParameterConfiguration</code> refers to the rows in
 the lambda, theta, and alpha matrices that resulted in the best fit:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">getTuningParameterConfiguration</span>(<span class="at">regularizedSEMMixedPenalty =</span> fitMp, </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                                <span class="at">tuningParameterConfiguration =</span> <span class="dv">11</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 parameter    penalty lambda alpha</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ind60=~x2       ind60=~x2       none      0     0</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ind60=~x3       ind60=~x3       none      0     0</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c2                     c2 elasticNet      1     1</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c3                     c3 elasticNet      1     1</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c4                     c4 elasticNet      1     1</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem60=~y2       dem60=~y2       none      0     0</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem60=~y3       dem60=~y3       none      0     0</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem60=~y4       dem60=~y4       none      0     0</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem65=~y6       dem65=~y6       none      0     0</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem65=~y7       dem65=~y7       none      0     0</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; c                       c       none      0     0</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; r1                     r1 elasticNet      0     1</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; r2                     r2 elasticNet      0     1</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; r3                     r3 elasticNet      0     1</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x1~~x1             x1~~x1       none      0     0</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x2~~x2             x2~~x2       none      0     0</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x3~~x3             x3~~x3       none      0     0</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y2~~y2             y2~~y2       none      0     0</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y3~~y3             y3~~y3       none      0     0</span></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y4~~y4             y4~~y4       none      0     0</span></span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y1~~y1             y1~~y1       none      0     0</span></span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y5~~y5             y5~~y5       none      0     0</span></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y6~~y6             y6~~y6       none      0     0</span></span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y7~~y7             y7~~y7       none      0     0</span></span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; y8~~y8             y8~~y8       none      0     0</span></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ind60~~ind60 ind60~~ind60       none      0     0</span></span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem60~~dem60 dem60~~dem60       none      0     0</span></span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dem65~~dem65 dem65~~dem65       none      0     0</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">getTuningParameterConfiguration</span>(<span class="at">regularizedSEMMixedPenalty =</span> fitMp, </span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>                                <span class="at">tuningParameterConfiguration =</span> <span class="dv">11</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt;                 parameter penalty lambda theta alpha</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; ind60=~x2       ind60=~x2    none      0     0     0</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; ind60=~x3       ind60=~x3    none      0     0     0</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; c2                     c2   lasso      1     0     1</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; c3                     c3   lasso      1     0     1</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; c4                     c4   lasso      1     0     1</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; dem60=~y2       dem60=~y2    none      0     0     0</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; dem60=~y3       dem60=~y3    none      0     0     0</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt; dem60=~y4       dem60=~y4    none      0     0     0</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; dem65=~y6       dem65=~y6    none      0     0     0</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; dem65=~y7       dem65=~y7    none      0     0     0</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; c                       c    none      0     0     0</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; r1                     r1   lasso      0     0     1</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt; r2                     r2   lasso      0     0     1</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; r3                     r3   lasso      0     0     1</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt; x1~~x1             x1~~x1    none      0     0     0</span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; x2~~x2             x2~~x2    none      0     0     0</span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt; x3~~x3             x3~~x3    none      0     0     0</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt; y2~~y2             y2~~y2    none      0     0     0</span></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="co">#&gt; y3~~y3             y3~~y3    none      0     0     0</span></span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a><span class="co">#&gt; y4~~y4             y4~~y4    none      0     0     0</span></span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a><span class="co">#&gt; y1~~y1             y1~~y1    none      0     0     0</span></span>
+<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a><span class="co">#&gt; y5~~y5             y5~~y5    none      0     0     0</span></span>
+<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a><span class="co">#&gt; y6~~y6             y6~~y6    none      0     0     0</span></span>
+<span id="cb12-27"><a href="#cb12-27" tabindex="-1"></a><span class="co">#&gt; y7~~y7             y7~~y7    none      0     0     0</span></span>
+<span id="cb12-28"><a href="#cb12-28" tabindex="-1"></a><span class="co">#&gt; y8~~y8             y8~~y8    none      0     0     0</span></span>
+<span id="cb12-29"><a href="#cb12-29" tabindex="-1"></a><span class="co">#&gt; ind60~~ind60 ind60~~ind60    none      0     0     0</span></span>
+<span id="cb12-30"><a href="#cb12-30" tabindex="-1"></a><span class="co">#&gt; dem60~~dem60 dem60~~dem60    none      0     0     0</span></span>
+<span id="cb12-31"><a href="#cb12-31" tabindex="-1"></a><span class="co">#&gt; dem65~~dem65 dem65~~dem65    none      0     0     0</span></span></code></pre></div>
 <p>Here is a short run-time comparison of ista and glmnet with the
 lasso-regularized model from above: Five repetitions using ista took
-42.11 seconds, while glmnet took 1.51 seconds. That is, if you can use
+43.788 seconds, while glmnet took 1.733 seconds. That is, if you can use
 glmnet with your model, we recommend that you do.</p>
 </div>
 <div id="bibliography" class="section level2">

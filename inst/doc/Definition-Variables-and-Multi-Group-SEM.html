@@ -353,7 +353,7 @@ Unfortunately, <strong>lessSEM</strong> does not support the same syntax
 at the moment. “Throwing” a multi-group SEM into
 <strong>lessSEM</strong> will just result in errors. Instead,
 <strong>lessSEM</strong> follows a slightly different approach: You can
-pass multiple <strong>lavaan</strong> models at once which are then
+pass multiple <strong>lavaan</strong> models at once that are then
 combined into a multi-group model.</p>
 <p>In the following, we will look at a two-group model to better
 understand how multi-group models are implemented in
@@ -363,91 +363,85 @@ understand how multi-group models are implemented in
 <p>To set up a multi-group model in <strong>lessSEM</strong>, we first
 have to fit separate models for each of the groups in
 <strong>lavaan</strong>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># For simplicity, we will use a subset of the Holzinger Swineford data set </span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># which is also used at https://lavaan.ugent.be/tutorial/groups.html</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># to demonstrate multi-group SEM</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># To use mutli-group SEM in lessSEM, we have to set up a separate model</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># for each of the groups: </span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># - Pasteur: Children attending the Pasteur school</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># - Grant_White: Children attending the Grant-White school</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(HolzingerSwineford1939)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="do">## Pasteur ##</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>Pasteur <span class="ot">&lt;-</span> <span class="fu">subset</span>(HolzingerSwineford1939, school <span class="sc">==</span> <span class="st">&quot;Pasteur&quot;</span>)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>model_Pasteur <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&#39; </span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="st">    visual  =~ l1_Pasteur*x1 + l2_Pasteur*x2 + l3_Pasteur*x3</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="st">    x1 ~~ v1*x1</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="st">    x2 ~~ v2*x2</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="st">    x3 ~~ v3*x3</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="st">    </span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="st">    visual ~~ lv1*visual</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="st">    x1 ~ m1*1</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="st">    x2 ~ m2*1</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="st">    x3 ~ m3*1&#39;</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>fit_Pasteur <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> model_Pasteur, </span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> Pasteur, </span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>                   <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="do">## Grant-White</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>Grant_White <span class="ot">&lt;-</span> <span class="fu">subset</span>(HolzingerSwineford1939, school <span class="sc">==</span> <span class="st">&quot;Grant-White&quot;</span>)</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>model_Grant_White <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&#39; </span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="st">    visual  =~ l1_Grant_White*x1 + l2_Grant_White*x2 + l3_Grant_White*x3</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="st">    x1 ~~ v1*x1</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="st">    x2 ~~ v2*x2</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="st">    x3 ~~ v3*x3</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="st">    </span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="st">    visual ~~ lv1*visual</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="st">    x1 ~ m1*1</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="st">    x2 ~ m2*1</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="st">    x3 ~ m3*1&#39;</span>)</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>fit_Grant_White <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> model_Grant_White, </span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span> Grant_White, </span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>                       <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># For simplicity, we will use a subset of the Holzinger Swineford data set </span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># that is also used at https://lavaan.ugent.be/tutorial/groups.html</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># to demonstrate multi-group SEM</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># To use mutli-group SEM in lessSEM, we have to set up a separate model</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># for each of the groups: </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># - Pasteur: Children attending the Pasteur school</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co"># - Grant_White: Children attending the Grant-White school</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="fu">data</span>(HolzingerSwineford1939)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="do">## Pasteur ##</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>Pasteur <span class="ot">&lt;-</span> <span class="fu">subset</span>(HolzingerSwineford1939, school <span class="sc">==</span> <span class="st">&quot;Pasteur&quot;</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>model_Pasteur <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&#39; </span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="st">    visual  =~ l1_Pasteur*x1 + l2_Pasteur*x2 + l3_Pasteur*x3</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="st">    x1 ~~ v1*x1</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="st">    x2 ~~ v2*x2</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="st">    x3 ~~ v3*x3</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="st">    </span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="st">    visual ~~ lv1*visual</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="st">    x1 ~ m1*1</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="st">    x2 ~ m2*1</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="st">    x3 ~ m3*1&#39;</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>fit_Pasteur <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> model_Pasteur, </span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>                   <span class="at">data =</span> Pasteur, </span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>                   <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="do">## Grant-White</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>Grant_White <span class="ot">&lt;-</span> <span class="fu">subset</span>(HolzingerSwineford1939, school <span class="sc">==</span> <span class="st">&quot;Grant-White&quot;</span>)</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>model_Grant_White <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&#39; </span></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="st">    visual  =~ l1_Grant_White*x1 + l2_Grant_White*x2 + l3_Grant_White*x3</span></span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a><span class="st">    x1 ~~ v1*x1</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a><span class="st">    x2 ~~ v2*x2</span></span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a><span class="st">    x3 ~~ v3*x3</span></span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a><span class="st">    </span></span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a><span class="st">    visual ~~ lv1*visual</span></span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a><span class="st">    x1 ~ m1*1</span></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a><span class="st">    x2 ~ m2*1</span></span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a><span class="st">    x3 ~ m3*1&#39;</span>)</span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a>fit_Grant_White <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> model_Grant_White, </span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a>                       <span class="at">data =</span> Grant_White, </span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a>                       <span class="at">std.lv =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
 <div id="second-step-pass-the-model-to-lesssem" class="section level2">
 <h2>Second Step: Pass the Model to <strong>lessSEM</strong></h2>
 <p>Now that we have our group-specific models, we can pass them to
 <strong>lessSEM</strong>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lessSEM)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># We will just estimate the parameters using the BFGS optimizer without any </span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># regularization.</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Note that we pass the two models as a vector. This is very important: lessSEM</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># will then set up the multi-group model</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">bfgs</span>(<span class="at">lavaanModel =</span> <span class="fu">c</span>(fit_Pasteur, fit_Grant_White))</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(lessSEM)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># We will just estimate the parameters using the BFGS optimizer without any </span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># regularization.</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># Note that we pass the two models as a vector. lessSEM</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># will then set up the multi-group model</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">bfgs</span>(<span class="at">lavaanModel =</span> <span class="fu">c</span>(fit_Pasteur, fit_Grant_White))</span></code></pre></div>
 <p>Let’s have a look at the parameters:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--|| l1_Pasteur l2_Pasteur l3_Pasteur         v1         v2</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0000  0.0000 ||--||     0.7240     0.5610     0.8824     0.8449     1.0711</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                           </span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                           </span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- -------------- --------------</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          v3         m1         m2         m3 l1_Grant_White l2_Grant_White</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ============== ==============</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      0.6108     4.9212     6.0770     2.2281         0.7088         0.5536</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                </span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                </span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  --------------</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  l3_Grant_White</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ==============</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          0.7360</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">coef</span>(fit)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                           </span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                        </span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--|| l1_Pasteur l2_Pasteur l3_Pasteur         v1         v2         v3         m1         m2         m3</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;   0.0000  0.0000 ||--||     0.7240     0.5610     0.8824     0.8449     1.0711     0.6108     4.9212     6.0770     2.2281</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt;                                              </span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt;                                              </span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt;  -------------- -------------- --------------</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;  l1_Grant_White l2_Grant_White l3_Grant_White</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt;  ============== ============== ==============</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt;          0.7088         0.5536         0.7360</span></span></code></pre></div>
 <p>That’s curious! There are group-specific parameters, but
 <strong>only</strong> for the parameters where we provided
-group-specific names! This is very important:</p>
+group-specific names!</p>
 <blockquote>
 <p><strong>Important</strong>: If you set up a multi-group model with
 <strong>lessSEM</strong>, <strong>lessSEM</strong> will assume that all
 parameters with the same names should also have the same values. This
-includes parameters which you may have estimated, but for whom the names
+includes parameters that you may have estimated, but for whom the names
 were provided by <strong>lavaan</strong> (e.g., variances).</p>
 </blockquote>
 <div id="different-models-with-shared-parameter-labels" class="section level3">
@@ -455,54 +449,54 @@ were provided by <strong>lavaan</strong> (e.g., variances).</p>
 <p>All parameters that have the same labels in multiple models will be
 constrained to equality across models! If you are not careful, this can
 result in very annoying mistakes. To demonstrate this, we will use two
-very different models which may share some parameter names.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model from ?lavaan::sem</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="st">     dem60 =~ y1 + a*y2 + b*y3 + c*y4</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="st">     dem65 =~ y5 + a*y6 + b*y7 + c*y8</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="st">  # regressions</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="st">    dem60 ~ ind60</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="st">    dem65 ~ ind60 + dem60</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="st">  # residual correlations</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="st">    y1 ~~ y5</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="st">    y2 ~~ y4 + y6</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="st">    y3 ~~ y7</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="st">    y4 ~~ y8</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="st">    y6 ~~ y8</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>fitPolDem <span class="ot">&lt;-</span> <span class="fu">sem</span>(model, </span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> PoliticalDemocracy,</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">meanstructure =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Model from ?lavaan::cfa</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>HS.model <span class="ot">&lt;-</span> <span class="st">&#39; visual  =~ x1 + x2 + x3</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="st">              textual =~ x4 + x5 + x6</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="st">              speed   =~ x7 + x8 + x9 &#39;</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>fitHS <span class="ot">&lt;-</span> <span class="fu">cfa</span>(HS.model,</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> HolzingerSwineford1939,</span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>             <span class="at">meanstructure =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="do">## lessSEM does not care if the models passed to the function are similar </span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co"># or even use different data sets. Of course, it probably does not make much sense</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co"># to estimate two different models at the same time, but lessSEM won&#39;t stop you</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co"># from trying...</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">bfgs</span>(<span class="at">lavaanModel =</span> <span class="fu">c</span>(fitPolDem, fitHS))</span></code></pre></div>
+very different models that may share some parameter names.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Model from ?lavaan::sem</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="st">     dem60 =~ y1 + a*y2 + b*y3 + c*y4</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="st">     dem65 =~ y5 + a*y6 + b*y7 + c*y8</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="st">  # regressions</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="st">    dem60 ~ ind60</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="st">    dem65 ~ ind60 + dem60</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="st">  # residual correlations</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="st">    y1 ~~ y5</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="st">    y2 ~~ y4 + y6</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="st">    y3 ~~ y7</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="st">    y4 ~~ y8</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="st">    y6 ~~ y8</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="st">&#39;</span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>fitPolDem <span class="ot">&lt;-</span> <span class="fu">sem</span>(model, </span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>                 <span class="at">data =</span> PoliticalDemocracy,</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>                 <span class="at">meanstructure =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co"># Model from ?lavaan::cfa</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>HS.model <span class="ot">&lt;-</span> <span class="st">&#39; visual  =~ x1 + x2 + x3</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="st">              textual =~ x4 + x5 + x6</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="st">              speed   =~ x7 + x8 + x9 &#39;</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>fitHS <span class="ot">&lt;-</span> <span class="fu">cfa</span>(HS.model,</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>             <span class="at">data =</span> HolzingerSwineford1939,</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>             <span class="at">meanstructure =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="do">## lessSEM does not care if the models passed to the function are similar </span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co"># or even use different data sets. Of course, it probably does not make much sense</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co"># to estimate two different models at the same time, but lessSEM won&#39;t stop you</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co"># from trying...</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">bfgs</span>(<span class="at">lavaanModel =</span> <span class="fu">c</span>(fitPolDem, fitHS))</span></code></pre></div>
 <p>Let’s first compare the fit of the separate models to that of the
 multi-group model. If <strong>lessSEM</strong> were to estimate the
 models truly separately we would expect the fit to be the same:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fit for separate models</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="dv">2</span><span class="sc">*</span><span class="fu">logLik</span>(fitPolDem) <span class="sc">+</span> (<span class="sc">-</span><span class="dv">2</span>)<span class="sc">*</span><span class="fu">logLik</span>(fitHS)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &#39;log Lik.&#39; 10573.13 (df=39)</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># fit for multi-group model:</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">@</span>fits<span class="sc">$</span>m2LL</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 10813.96</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># fit for separate models</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="sc">-</span><span class="dv">2</span><span class="sc">*</span><span class="fu">logLik</span>(fitPolDem) <span class="sc">+</span> (<span class="sc">-</span><span class="dv">2</span>)<span class="sc">*</span><span class="fu">logLik</span>(fitHS)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; &#39;log Lik.&#39; 10573.13 (df=39)</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># fit for multi-group model:</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>fit<span class="sc">@</span>fits<span class="sc">$</span>m2LL</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; [1] 10813.96</span></span></code></pre></div>
 <p>Obviously, these two fits are not the same. What may have happened?
 Looking at the parameter estimates of the multi-group model shows that
 the two models, <code>fitPolDem</code> and <code>fitHS</code> did share
@@ -510,67 +504,49 @@ some parameter labels! For instance, the intercepts of <code>x1</code>
 is called <code>x1~1</code> in both models. Therefore,
 <strong>lessSEM</strong> assumed that we wanted these parameters to have
 exactly the same value in both models.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3          a          b          c</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0000  0.0000 ||--||     1.8164     1.5582     1.1879     1.1706     1.2511</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                 </span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                 </span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ----------- ----------- ----------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dem60~ind60 dem65~ind60 dem65~dem60     y1~~y5     y2~~y4     y2~~y6     y3~~y7</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  =========== =========== =========== ========== ========== ========== ==========</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       1.4062      0.4696      0.8755     0.5389     1.4270     2.2120     0.7425</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      y4~~y8     y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2     y3~~y3</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      0.3718     1.3734     0.0000     1.3895     1.2086     1.8544     7.5981     4.9592</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                  </span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                  </span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ------------ ------------</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ============ ============</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      3.2006     2.2664     4.9911     3.6046     3.3135       0.5305       3.8021</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                </span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                </span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------------ ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dem65~~dem65       x1~1       x2~1       x3~1       y1~1       y2~1       y3~1</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ============ ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        0.2003     5.0409     5.8482     2.5445     5.4463     4.2330     6.5420</span></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                              </span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                              </span></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        y4~1       y5~1       y6~1       y7~1       y8~1 visual=~x2 visual=~x3</span></span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      4.4295     5.1139     2.9502     6.1703     4.0150     0.2791     0.4461</span></span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                </span></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                </span></span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ----------- ----------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  textual=~x5 textual=~x6  speed=~x8  speed=~x9     x4~~x4     x5~~x5     x6~~x6</span></span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  =========== =========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       1.1126      0.9221     1.1746     1.0056     0.3681     0.4434     0.3610</span></span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- -------------- ---------------- ------------</span></span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      x7~~x7     x8~~x8     x9~~x9 visual~~visual textual~~textual speed~~speed</span></span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ============== ================ ============</span></span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      0.7750     0.4590     0.6025         1.3695           0.9839       0.4084</span></span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  --------------- ------------- -------------- ---------- ---------- ----------</span></span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  visual~~textual visual~~speed textual~~speed       x4~1       x5~1       x6~1</span></span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  =============== ============= ============== ========== ========== ==========</span></span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           0.4666        0.2615         0.1746     3.0967     4.3804     2.2186</span></span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ----------</span></span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        x7~1       x8~1       x9~1</span></span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ==========</span></span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      4.2060     5.5507     5.3943</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">coef</span>(fit)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                   </span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                </span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ----------- ----------- -----------</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3          a          b          c dem60~ind60 dem65~ind60 dem65~dem60</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== =========== =========== ===========</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;   0.0000  0.0000 ||--||     1.8164     1.5582     1.1879     1.1706     1.2511      1.4062      0.4696      0.8755</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;      y1~~y5     y2~~y4     y2~~y6     y3~~y7     y4~~y8     y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;      0.5389     1.4270     2.2120     0.7425     0.3718     1.3734     0.0000     1.3895     1.2086     1.8544     7.5981</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ------------ ------------ ------------ ----------</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;      y3~~y3     y4~~y4     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65       x1~1</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ============ ============ ============ ==========</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;      4.9592     3.2006     2.2664     4.9911     3.6046     3.3135       0.5305       3.8021       0.2003     5.0409</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt;        x2~1       x3~1       y1~1       y2~1       y3~1       y4~1       y5~1       y6~1       y7~1       y8~1 visual=~x2</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt;      5.8482     2.5445     5.4463     4.2330     6.5420     4.4295     5.1139     2.9502     6.1703     4.0150     0.2791</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt;  ---------- ----------- ----------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt;  visual=~x3 textual=~x5 textual=~x6  speed=~x8  speed=~x9     x4~~x4     x5~~x5     x6~~x6     x7~~x7     x8~~x8     x9~~x9</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt;  ========== =========== =========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt;      0.4461      1.1126      0.9221     1.1746     1.0056     0.3681     0.4434     0.3610     0.7750     0.4590     0.6025</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt;  -------------- ---------------- ------------ --------------- ------------- -------------- ---------- ---------- ----------</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt;  visual~~visual textual~~textual speed~~speed visual~~textual visual~~speed textual~~speed       x4~1       x5~1       x6~1</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt;  ============== ================ ============ =============== ============= ============== ========== ========== ==========</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co">#&gt;          1.3695           0.9839       0.4084          0.4666        0.2615         0.1746     3.0967     4.3804     2.2186</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ----------</span></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co">#&gt;        x7~1       x8~1       x9~1</span></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ==========</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a><span class="co">#&gt;      4.2060     5.5507     5.3943</span></span></code></pre></div>
 </div>
 </div>
 <div id="regularized-multi-group-models" class="section level2">
@@ -578,29 +554,23 @@ exactly the same value in both models.</p>
 <p>All multi-group models can be regularized similar to the standard
 SEM: Instead of using the <code>bfgs</code>-function, we use (for
 instance), the <code>lasso</code>-function:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> <span class="fu">c</span>(fit_Pasteur, fit_Grant_White),</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;l1_Pasteur&quot;</span>), </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">nLambdas =</span> <span class="dv">20</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> <span class="fu">c</span>(fit_Pasteur, fit_Grant_White),</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>             <span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;l1_Pasteur&quot;</span>), </span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>             <span class="at">nLambdas =</span> <span class="dv">20</span>)</span></code></pre></div>
 <p>The coefficients can be extracted as usual:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit, <span class="at">criterion =</span> <span class="st">&quot;AIC&quot;</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--|| l1_Pasteur l2_Pasteur l3_Pasteur         v1         v2</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0000  1.0000 ||--||     0.7241     0.5611     0.8822     0.8447     1.0710</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                           </span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                           </span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- -------------- --------------</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          v3         m1         m2         m3 l1_Grant_White l2_Grant_White</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ============== ==============</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      0.6110     4.9211     6.0768     2.2279         0.7089         0.5537</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                </span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                </span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  --------------</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  l3_Grant_White</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ==============</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          0.7358</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">coef</span>(fit, <span class="at">criterion =</span> <span class="st">&quot;AIC&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                           </span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                        </span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--|| l1_Pasteur l2_Pasteur l3_Pasteur         v1         v2         v3         m1         m2         m3</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;   0.0000  1.0000 ||--||     0.7239     0.5609     0.8826     0.8450     1.0712     0.6107     4.9212     6.0769     2.2280</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt;                                              </span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt;                                              </span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt;  -------------- -------------- --------------</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;  l1_Grant_White l2_Grant_White l3_Grant_White</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;  ============== ============== ==============</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt;          0.7087         0.5536         0.7361</span></span></code></pre></div>
 <div id="regularizing-differences-between-parameters-using-lesssem" class="section level3">
 <h3>Regularizing Differences Between Parameters using
 <strong>lessSEM</strong></h3>
@@ -621,19 +591,19 @@ we can regularize such differences using transformations (see
 <code>vignette(topic = &quot;Parameter-transformations&quot;, package = &quot;lessSEM&quot;)</code>
 for more details). Therefore, the first step is to define the
 transformation:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>transformation <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="st">parameters: l1_Pasteur, l1_Grant_White, l1_delta</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="st">l1_Grant_White = l1_Pasteur + l1_delta;</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>transformation <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="st">parameters: l1_Pasteur, l1_Grant_White, l1_delta</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="st">l1_Grant_White = l1_Pasteur + l1_delta;</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="st">&quot;</span></span></code></pre></div>
 <p>Next, we pass this transformation to our model:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> <span class="fu">c</span>(fit_Pasteur, fit_Grant_White),</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;l1_delta&quot;</span>), <span class="co"># we want to regularize the difference!</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">nLambdas =</span> <span class="dv">20</span>,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">modifyModel =</span> <span class="fu">modifyModel</span>(<span class="at">transformations =</span> transformation))</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> <span class="fu">c</span>(fit_Pasteur, fit_Grant_White),</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>             <span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;l1_delta&quot;</span>), <span class="co"># we want to regularize the difference!</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>             <span class="at">nLambdas =</span> <span class="dv">20</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>             <span class="at">modifyModel =</span> <span class="fu">modifyModel</span>(<span class="at">transformations =</span> transformation))</span></code></pre></div>
 <p>Now, let’s look at the parameter estimates:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit, <span class="at">criterion =</span> <span class="st">&quot;AIC&quot;</span>)<span class="sc">@</span>estimates[,<span class="fu">c</span>(<span class="st">&quot;l1_Pasteur&quot;</span>, <span class="st">&quot;l1_delta&quot;</span>)]</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; l1_Pasteur   l1_delta </span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.716718   0.000000</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">coef</span>(fit, <span class="at">criterion =</span> <span class="st">&quot;AIC&quot;</span>)<span class="sc">@</span>estimates[,<span class="fu">c</span>(<span class="st">&quot;l1_Pasteur&quot;</span>, <span class="st">&quot;l1_delta&quot;</span>)]</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt; l1_Pasteur   l1_delta </span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt;   0.716718   0.000000</span></span></code></pre></div>
 <p>As the <code>l1_delta</code> parameter has been set to zero, we can
 assume measurement invariance. Note that you won’t find
 <code>l1_Grant_White</code> in the parameters of the model. This is
@@ -641,28 +611,28 @@ because <code>l1_Grant_White</code> is a deterministic function of the
 actual parameters <code>l1_Pasteur</code> and <code>l1_delta</code>. If
 you want to find the value for <code>l1_Grant_White</code>, have a look
 at:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">@</span>transformations</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          lambda alpha l1_Grant_White</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  0.0056517504     1      0.7167576</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  0.0053542898     1      0.7167180</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3  0.0050568293     1      0.7166009</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  0.0047593687     1      0.7161368</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5  0.0044619082     1      0.7155761</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  0.0041644476     1      0.7151688</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7  0.0038669871     1      0.7147807</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8  0.0035695265     1      0.7141878</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9  0.0032720660     1      0.7137695</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10 0.0029746054     1      0.7132645</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 11 0.0026771449     1      0.7128818</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 12 0.0023796844     1      0.7125411</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 13 0.0020822238     1      0.7120493</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 14 0.0017847633     1      0.7115889</span></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 15 0.0014873027     1      0.7110626</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 16 0.0011898422     1      0.7107554</span></span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 17 0.0008923816     1      0.7102373</span></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 18 0.0005949211     1      0.7097089</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 19 0.0002974605     1      0.7094042</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 20 0.0000000000     1      0.7088852</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>fit<span class="sc">@</span>transformations</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt;          lambda alpha l1_Grant_White</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; 1  0.0056517504     1      0.7167576</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; 2  0.0053542898     1      0.7167180</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; 3  0.0050568293     1      0.7166009</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; 4  0.0047593687     1      0.7161368</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; 5  0.0044619082     1      0.7155761</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; 6  0.0041644476     1      0.7151688</span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; 7  0.0038669871     1      0.7147807</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; 8  0.0035695265     1      0.7141878</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt; 9  0.0032720660     1      0.7137695</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; 10 0.0029746054     1      0.7132645</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; 11 0.0026771449     1      0.7128818</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; 12 0.0023796844     1      0.7125411</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; 13 0.0020822238     1      0.7120493</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt; 14 0.0017847633     1      0.7115889</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; 15 0.0014873027     1      0.7110626</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt; 16 0.0011898422     1      0.7107554</span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; 17 0.0008923816     1      0.7102373</span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt; 18 0.0005949211     1      0.7097089</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt; 19 0.0002974605     1      0.7094042</span></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="co">#&gt; 20 0.0000000000     1      0.7088852</span></span></code></pre></div>
 <p>Note that <strong>lslx</strong> (Huang, 2020) supports different
 penalties for the delta parameter (<code>l1_delta</code>) and the
 baseline parameter (<code>l1_Pasteur</code>). This is currently not
@@ -674,7 +644,7 @@ supported by <strong>lessSEM</strong>.</p>
 <p>Automatic cross-validation for multi-group models with, for instance,
 <code>cvLasso</code> is <em>not</em> yet implemented. This is because it
 can be difficult to decide how to split up the data set in each
-submodel. If you want to use cross-validation, you will unfortunately
+submodel. If you want to use cross-validation, you will (unfortunately)
 have to set up the procedure manually.</p>
 </div>
 <div id="definition-variables" class="section level2">
@@ -699,143 +669,143 @@ required for many definition variable applications, such as latent
 growth curve models with subject-specific measurement occasions. In the
 following, we will use a workaround.</p>
 <p>Let’s first simulate some data:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="do">#### Population parameters ####</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>intercept_mu <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>intercept_sigma <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>slope_mu <span class="ot">&lt;-</span> .<span class="dv">3</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>slope_sigma <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="do">#### data set ####</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>intercepts <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">n =</span> N, </span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>                    <span class="at">mean =</span> intercept_mu, </span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                    <span class="at">sd =</span> intercept_sigma)</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>slopes <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">n =</span> N, </span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">mean =</span> slope_mu, </span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">sd =</span> slope_sigma)</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">5</span>,<span class="dv">1</span>),</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">nrow =</span> N,</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>                <span class="at">ncol =</span> <span class="dv">6</span>,</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>                <span class="at">byrow =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(<span class="dv">0</span>,<span class="fu">matrix</span>(<span class="fu">round</span>(<span class="fu">runif</span>(<span class="at">n =</span> N<span class="sc">*</span><span class="dv">5</span>, <span class="at">min =</span> <span class="sc">-</span>.<span class="dv">2</span>,<span class="at">max =</span> .<span class="dv">2</span>),<span class="dv">2</span>),</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>                 <span class="at">nrow =</span> N,</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ncol =</span> <span class="dv">5</span>,</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">byrow =</span> <span class="cn">TRUE</span>)) <span class="co"># we add some jitter to make the times person-specific</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>lgcData <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> <span class="fu">ncol</span>(times), <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="cn">NULL</span>, <span class="fu">paste0</span>(<span class="st">&quot;x&quot;</span>, <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>)))</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>  lgcData[i,] <span class="ot">&lt;-</span> intercepts[i] <span class="sc">+</span> times[i,]<span class="sc">*</span> slopes[i] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">ncol</span>(lgcData),<span class="dv">0</span>,.<span class="dv">3</span>)</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>lgcData <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lgcData)</span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lgcData)</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            x0         x1         x2        x3        x4        x5</span></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1  0.26801876 -0.5353028 -1.0262295 -2.533564 -2.890246 -4.655061</span></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2  0.26260181 -0.4802635 -2.0790754 -2.686983 -3.677022 -4.540501</span></span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 -0.71054447 -0.5477048 -0.5747618 -1.231821 -1.229388 -1.418401</span></span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4  0.14564354  1.0690979  1.8919916  2.842025  2.953471  4.654879</span></span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5  0.09501816  1.6350899  2.6331440  4.729328  5.423381  6.799296</span></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6  2.51013193  3.0917904  4.1193617  5.749542  6.222599  7.716919</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(times)</span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6]</span></span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]    0 0.94 2.13 3.01 3.91 5.12</span></span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,]    0 0.84 2.13 2.91 4.10 5.19</span></span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]    0 0.83 2.14 3.12 3.95 4.93</span></span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4,]    0 0.88 2.03 3.16 4.01 5.03</span></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5,]    0 1.07 2.01 3.00 3.81 4.82</span></span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [6,]    0 1.17 2.11 2.88 4.06 5.06</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="do">#### Population parameters ####</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>intercept_mu <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>intercept_sigma <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>slope_mu <span class="ot">&lt;-</span> .<span class="dv">3</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a>slope_sigma <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="do">#### data set ####</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>intercepts <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">n =</span> N, </span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>                    <span class="at">mean =</span> intercept_mu, </span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>                    <span class="at">sd =</span> intercept_sigma)</span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>slopes <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="at">n =</span> N, </span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>                <span class="at">mean =</span> slope_mu, </span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>                <span class="at">sd =</span> slope_sigma)</span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a>times <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">5</span>,<span class="dv">1</span>),</span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>                <span class="at">nrow =</span> N,</span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a>                <span class="at">ncol =</span> <span class="dv">6</span>,</span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a>                <span class="at">byrow =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a>  <span class="fu">cbind</span>(<span class="dv">0</span>,<span class="fu">matrix</span>(<span class="fu">round</span>(<span class="fu">runif</span>(<span class="at">n =</span> N<span class="sc">*</span><span class="dv">5</span>, <span class="at">min =</span> <span class="sc">-</span>.<span class="dv">2</span>,<span class="at">max =</span> .<span class="dv">2</span>),<span class="dv">2</span>),</span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a>                 <span class="at">nrow =</span> N,</span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a>                 <span class="at">ncol =</span> <span class="dv">5</span>,</span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a>                 <span class="at">byrow =</span> <span class="cn">TRUE</span>)) <span class="co"># we add some jitter to make the times person-specific</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a>lgcData <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="at">nrow =</span> N, <span class="at">ncol =</span> <span class="fu">ncol</span>(times), <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="cn">NULL</span>, <span class="fu">paste0</span>(<span class="st">&quot;x&quot;</span>, <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>)))</span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a>  lgcData[i,] <span class="ot">&lt;-</span> intercepts[i] <span class="sc">+</span> times[i,]<span class="sc">*</span> slopes[i] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">ncol</span>(lgcData),<span class="dv">0</span>,.<span class="dv">3</span>)</span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a>}</span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a>lgcData <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lgcData)</span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a></span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a><span class="fu">head</span>(lgcData)</span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a><span class="co">#&gt;            x0         x1         x2        x3        x4        x5</span></span>
+<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a><span class="co">#&gt; 1  0.26801876 -0.5353028 -1.0262295 -2.533564 -2.890246 -4.655061</span></span>
+<span id="cb13-34"><a href="#cb13-34" tabindex="-1"></a><span class="co">#&gt; 2  0.26260181 -0.4802635 -2.0790754 -2.686983 -3.677022 -4.540501</span></span>
+<span id="cb13-35"><a href="#cb13-35" tabindex="-1"></a><span class="co">#&gt; 3 -0.71054447 -0.5477048 -0.5747618 -1.231821 -1.229388 -1.418401</span></span>
+<span id="cb13-36"><a href="#cb13-36" tabindex="-1"></a><span class="co">#&gt; 4  0.14564354  1.0690979  1.8919916  2.842025  2.953471  4.654879</span></span>
+<span id="cb13-37"><a href="#cb13-37" tabindex="-1"></a><span class="co">#&gt; 5  0.09501816  1.6350899  2.6331440  4.729328  5.423381  6.799296</span></span>
+<span id="cb13-38"><a href="#cb13-38" tabindex="-1"></a><span class="co">#&gt; 6  2.51013193  3.0917904  4.1193617  5.749542  6.222599  7.716919</span></span>
+<span id="cb13-39"><a href="#cb13-39" tabindex="-1"></a></span>
+<span id="cb13-40"><a href="#cb13-40" tabindex="-1"></a><span class="fu">head</span>(times)</span>
+<span id="cb13-41"><a href="#cb13-41" tabindex="-1"></a><span class="co">#&gt;      [,1] [,2] [,3] [,4] [,5] [,6]</span></span>
+<span id="cb13-42"><a href="#cb13-42" tabindex="-1"></a><span class="co">#&gt; [1,]    0 0.94 2.13 3.01 3.91 5.12</span></span>
+<span id="cb13-43"><a href="#cb13-43" tabindex="-1"></a><span class="co">#&gt; [2,]    0 0.84 2.13 2.91 4.10 5.19</span></span>
+<span id="cb13-44"><a href="#cb13-44" tabindex="-1"></a><span class="co">#&gt; [3,]    0 0.83 2.14 3.12 3.95 4.93</span></span>
+<span id="cb13-45"><a href="#cb13-45" tabindex="-1"></a><span class="co">#&gt; [4,]    0 0.88 2.03 3.16 4.01 5.03</span></span>
+<span id="cb13-46"><a href="#cb13-46" tabindex="-1"></a><span class="co">#&gt; [5,]    0 1.07 2.01 3.00 3.81 4.82</span></span>
+<span id="cb13-47"><a href="#cb13-47" tabindex="-1"></a><span class="co">#&gt; [6,]    0 1.17 2.11 2.88 4.06 5.06</span></span></code></pre></div>
 <p>Note that the times are random and subject-specific. We need a
 separate model for each subject. Because lavaan won’t let us set up such
 models, we will instead set up models using the entire data set and
 replace the data post-hoc.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>model_i <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="st">int =~ 1*x0 + 1*x1 + 1*x2 + 1*x3 + 1*x4 + 1*x5</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="st">slope =~ &quot;</span>,times[i,<span class="dv">1</span>],<span class="st">&quot;*x0 + </span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">2</span>],<span class="st">&quot;*x1 + </span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">3</span>],<span class="st">&quot;*x2 +  </span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">4</span>],<span class="st">&quot;*x3 + </span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">5</span>],<span class="st">&quot;*x4 + </span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">6</span>],<span class="st">&quot;*x5</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="st">         </span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="st">         int ~ intMean*1</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="st">         slope ~ slopeMean*1</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="st">         </span></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="st">         int ~~ intVar*int + 0*slope</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="st">         slope ~~ slopeVar*slope</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="st">x0 ~~ v*x0</span></span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="st">x1 ~~ v*x1</span></span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="st">x2 ~~ v*x2</span></span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="st">x3 ~~ v*x3</span></span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="st">x4 ~~ v*x4</span></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="st">x5 ~~ v*x5</span></span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="st">x0 ~ 0*1</span></span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="st">x1 ~ 0*1</span></span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="st">x2 ~ 0*1</span></span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="st">x3 ~ 0*1</span></span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="st">x4 ~ 0*1</span></span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="st">x5 ~ 0*1</span></span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span>  </span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>fit_i <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> model_i, </span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>             <span class="at">data =</span> lgcData, </span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>             <span class="at">do.fit =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>internalData <span class="ot">&lt;-</span> <span class="fu">lavInspect</span>(fit_i, <span class="st">&quot;data&quot;</span>)</span>
-<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a><span class="co"># replace the data set</span></span>
-<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>fit_i<span class="sc">@</span>Data<span class="sc">@</span>X[[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(lgcData[i,<span class="fu">colnames</span>(internalData),<span class="at">drop =</span> <span class="cn">FALSE</span>])</span>
-<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">c</span>(models, </span>
-<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>            fit_i)</span>
-<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N){</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>model_i <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="st">&quot;</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="st">int =~ 1*x0 + 1*x1 + 1*x2 + 1*x3 + 1*x4 + 1*x5</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="st">slope =~ &quot;</span>,times[i,<span class="dv">1</span>],<span class="st">&quot;*x0 + </span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">2</span>],<span class="st">&quot;*x1 + </span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">3</span>],<span class="st">&quot;*x2 +  </span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">4</span>],<span class="st">&quot;*x3 + </span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">5</span>],<span class="st">&quot;*x4 + </span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="st">         &quot;</span>,times[i,<span class="dv">6</span>],<span class="st">&quot;*x5</span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="st">         </span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="st">         int ~ intMean*1</span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="st">         slope ~ slopeMean*1</span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="st">         </span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="st">         int ~~ intVar*int + 0*slope</span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="st">         slope ~~ slopeVar*slope</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="st">x0 ~~ v*x0</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="st">x1 ~~ v*x1</span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="st">x2 ~~ v*x2</span></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="st">x3 ~~ v*x3</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="st">x4 ~~ v*x4</span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="st">x5 ~~ v*x5</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="st">x0 ~ 0*1</span></span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="st">x1 ~ 0*1</span></span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="st">x2 ~ 0*1</span></span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a><span class="st">x3 ~ 0*1</span></span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="st">x4 ~ 0*1</span></span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="st">x5 ~ 0*1</span></span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="st">&quot;</span>  </span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a>)</span>
+<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a></span>
+<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a>fit_i <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> model_i, </span>
+<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a>             <span class="at">data =</span> lgcData, </span>
+<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a>             <span class="at">do.fit =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a>internalData <span class="ot">&lt;-</span> <span class="fu">lavInspect</span>(fit_i, <span class="st">&quot;data&quot;</span>)</span>
+<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co"># replace the data set</span></span>
+<span id="cb14-40"><a href="#cb14-40" tabindex="-1"></a>fit_i<span class="sc">@</span>Data<span class="sc">@</span>X[[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(lgcData[i,<span class="fu">colnames</span>(internalData),<span class="at">drop =</span> <span class="cn">FALSE</span>])</span>
+<span id="cb14-41"><a href="#cb14-41" tabindex="-1"></a></span>
+<span id="cb14-42"><a href="#cb14-42" tabindex="-1"></a>models <span class="ot">&lt;-</span> <span class="fu">c</span>(models, </span>
+<span id="cb14-43"><a href="#cb14-43" tabindex="-1"></a>            fit_i)</span>
+<span id="cb14-44"><a href="#cb14-44" tabindex="-1"></a>}</span></code></pre></div>
 <p>Exemplarily, it makes sense to look at one of the models:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(model_i)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; int =~ 1*x0 + 1*x1 + 1*x2 + 1*x3 + 1*x4 + 1*x5</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; slope =~ 0*x0 + </span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          1.13*x1 + </span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          1.81*x2 +  </span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          3.06*x3 + </span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          4.12*x4 + </span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          4.98*x5</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          </span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          int ~ intMean*1</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          slope ~ slopeMean*1</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          </span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          int ~~ intVar*int + 0*slope</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          slope ~~ slopeVar*slope</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x0 ~~ v*x0</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x1 ~~ v*x1</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x2 ~~ v*x2</span></span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x3 ~~ v*x3</span></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x4 ~~ v*x4</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x5 ~~ v*x5</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x0 ~ 0*1</span></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x1 ~ 0*1</span></span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x2 ~ 0*1</span></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x3 ~ 0*1</span></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x4 ~ 0*1</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; x5 ~ 0*1</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">cat</span>(model_i)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt; int =~ 1*x0 + 1*x1 + 1*x2 + 1*x3 + 1*x4 + 1*x5</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt; slope =~ 0*x0 + </span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt;          1.13*x1 + </span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt;          1.81*x2 +  </span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt;          3.06*x3 + </span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt;          4.12*x4 + </span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt;          4.98*x5</span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt;          </span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt;          int ~ intMean*1</span></span>
+<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a><span class="co">#&gt;          slope ~ slopeMean*1</span></span>
+<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a><span class="co">#&gt;          </span></span>
+<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co">#&gt;          int ~~ intVar*int + 0*slope</span></span>
+<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="co">#&gt;          slope ~~ slopeVar*slope</span></span>
+<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#&gt; x0 ~~ v*x0</span></span>
+<span id="cb15-18"><a href="#cb15-18" tabindex="-1"></a><span class="co">#&gt; x1 ~~ v*x1</span></span>
+<span id="cb15-19"><a href="#cb15-19" tabindex="-1"></a><span class="co">#&gt; x2 ~~ v*x2</span></span>
+<span id="cb15-20"><a href="#cb15-20" tabindex="-1"></a><span class="co">#&gt; x3 ~~ v*x3</span></span>
+<span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a><span class="co">#&gt; x4 ~~ v*x4</span></span>
+<span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a><span class="co">#&gt; x5 ~~ v*x5</span></span>
+<span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; x0 ~ 0*1</span></span>
+<span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#&gt; x1 ~ 0*1</span></span>
+<span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#&gt; x2 ~ 0*1</span></span>
+<span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#&gt; x3 ~ 0*1</span></span>
+<span id="cb15-28"><a href="#cb15-28" tabindex="-1"></a><span class="co">#&gt; x4 ~ 0*1</span></span>
+<span id="cb15-29"><a href="#cb15-29" tabindex="-1"></a><span class="co">#&gt; x5 ~ 0*1</span></span></code></pre></div>
 <p>Note that the loadings of the slope are fixed to the time points at
 which person <code>i</code> provided data.</p>
 <p>Now we can pass the models to <strong>lessSEM</strong>:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">bfgs</span>(<span class="at">lavaanModel =</span> models)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">bfgs</span>(<span class="at">lavaanModel =</span> models)</span></code></pre></div>
 <p>The parameters are given by:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fit)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||    intMean  slopeMean     intVar   slopeVar          v</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0000  0.0000 ||--||    -0.0152     0.2921     0.7703     0.9411     0.0851</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">coef</span>(fit)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||    intMean  slopeMean     intVar   slopeVar          v</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#&gt;   0.0000  0.0000 ||--||    -0.0152     0.2921     0.7703     0.9411     0.0851</span></span></code></pre></div>
 </div>
 </div>
 <div id="bibliography" class="section level2">

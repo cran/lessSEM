@@ -342,16 +342,18 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <div id="regularized-structural-equation-modeling" class="section level2">
 <h2>Regularized Structural Equation Modeling</h2>
-<p>Regularized structural equation modeling (REGSEM) has been proposed
-by Jacobucci et al. (2016) and Huang et al. (2017). The objective is to
+<p>Regularized structural equation modeling has been proposed by
+Jacobucci et al. (2016) and Huang et al. (2017). The objective is to
 reduce overfitting in small samples and to allow for more flexibility.
-The general idea is to regularize some parameters towards zero. To this
-end, a penalty function <span class="math inline">\(p(\pmb\theta)\)</span> is added to the vanilla
-objective function. In lessSEM, this objective function is given by the
-full information maximum likelihood function <span class="math inline">\(F_{\text{ML}}(\pmb\theta)\)</span>. The new
+The general idea is to push some parameters towards zero. To this end, a
+penalty function <span class="math inline">\(p(\pmb\theta)\)</span> is
+added to the vanilla objective function. In lessSEM, this objective
+function is given by the full information maximum likelihood function
+<span class="math inline">\(F_{\text{ML}}(\pmb\theta)\)</span>. The new
 objective function is defined as:</p>
 <p><span class="math display">\[F_{\text{REGSEM},\lambda}(\pmb\theta) =
 F_{\text{ML}}(\pmb\theta)+ \lambda N p(\pmb\theta)\]</span></p>
+<p>Think of this function as a tug-of-war:</p>
 <ul>
 <li><span class="math inline">\(F_{\text{ML}}(\pmb\theta)\)</span> wants
 all parameters to be close to the ordinary maximum likelihood
@@ -370,33 +372,38 @@ with results returned by <strong>regsem</strong> and
 <strong>lessSEM</strong>, we have implemented the following
 functions:</p>
 <p><span class="math display">\[
-\begin{array}{l|ll}
-\text{penalty} &amp; \text{function} &amp; \text{reference}\\
-\hline
-\text{ridge} &amp; p( x_j) = \lambda x_j^2 &amp; \text{(Hoerl &amp;
-Kennard, 1970)}\\
-\text{lasso} &amp; p( x_j) = \lambda| x_j| &amp; \text{(Tibshirani,
-1996)}\\
-\text{adaptiveLasso} &amp; p( x_j) = \frac{1}{w_j}\lambda| x_j| &amp;
-\text{(Zou, 2006)}\\
-\text{elasticNet} &amp; p( x_j) = \alpha\lambda|x_j| + (1-\alpha)\lambda
-x_j^2 &amp; \text{(Zou &amp; Hastie, 2005)}\\
-\text{cappedL1} &amp; p( x_j) = \lambda \min(| x_j|, \theta); \theta
-&gt; 0 &amp; \text{(Zhang, 2010)}\\
-\text{lsp} &amp; p( x_j) = \lambda \log(1 + |x_j|\theta); \theta &gt; 0
-&amp; \text{(Candès et al., 2008)} \\
-\text{scad} &amp; p( x_j) = \begin{cases}
-\lambda |x_j| &amp; \text{if } |x_j| \leq \lambda\\
-\frac{-x_j^2 + 2\theta\lambda |x_j| - \lambda^2}{2(\theta -1)} &amp;
-\text{if } \lambda &lt; |x_j| \leq \lambda\theta \\
-(\theta + 1) \lambda^2/2 &amp; \text{if } |x_j| \geq \theta\lambda\\
-\end{cases}; \theta &gt; 2 &amp; \text{(Fan &amp; Li, 2001)} \\
-\text{mcp} &amp; p( x_j) =
-\begin{cases}
-\lambda |x_j| - x_j^2/(2\theta) &amp; \text{if } |x_j| \leq
+\begin{array}{l|llll}
+    \text{penalty} &amp; \text{function} &amp; \text{optimizer} &amp;
+\text{reference}\\
+    \hline
+    \text{ridge} &amp; p( x_j) = \lambda x_j^2 &amp; \text{glmnet, ista}
+&amp; \text{(Hoerl \&amp; Kennard, 1970)}\\
+    \text{lasso} &amp; p( x_j) = \lambda| x_j| &amp; \text{glmnet, ista}
+&amp; \text{(Tibshirani, 1996)}\\
+    \text{adaptiveLasso} &amp; p( x_j) = \frac{1}{w_j}\lambda| x_j|
+&amp; \text{glmnet, ista} &amp; \text{(Zou, 2006)}\\
+    \text{elasticNet} &amp; p( x_j) = \alpha\lambda| x_j| +
+(1-\alpha)\lambda x_j^2 &amp; \text{glmnet, ista} &amp; \text{(Zou
+\&amp; Hastie, 2005)}\\
+    \text{cappedL1} &amp; p( x_j) = \lambda \min(| x_j|, \theta); \theta
+&gt; 0 &amp;\text{glmnet, ista}&amp; \text{(Zhang, 2010)}\\
+    \text{lsp} &amp; p( x_j) = \lambda \log(1 + |x_j|/\theta); \theta
+&gt; 0 &amp;\text{glmnet, ista}&amp; \text{(Candès et al., 2008)} \\
+    \text{scad} &amp; p( x_j) = \begin{cases}
+        \lambda |x_j| &amp; \text{if } |x_j| \leq \lambda\\
+        \frac{-x_j^2 + 2\theta\lambda |x_j| - \lambda^2}{2(\theta -1)}
+&amp; \text{if } \lambda &lt; |x_j| \leq \lambda\theta \\
+        (\theta + 1) \lambda^2/2 &amp; \text{if } |x_j| \geq
 \theta\lambda\\
-\theta\lambda^2/2 &amp; \text{if } |x_j| &gt; \lambda\theta
-\end{cases}; \theta &gt; 0 &amp; \text{(Zhang, 2010)}
+    \end{cases}; \theta &gt; 2 &amp;\text{glmnet, ista}&amp; \text{(Fan
+\&amp; Li, 2001)} \\
+    \text{mcp} &amp; p( x_j) =
+    \begin{cases}
+        \lambda |x_j| - x_j^2/(2\theta) &amp; \text{if } |x_j| \leq
+\theta\lambda\\
+        \theta\lambda^2/2 &amp; \text{if } |x_j| &gt; \lambda\theta
+    \end{cases}; \theta &gt; 0 &amp;\text{glmnet, ista}&amp;
+\text{(Zhang, 2010)}
 \end{array}
 \]</span></p>
 </div>
@@ -404,9 +411,9 @@ x_j^2 &amp; \text{(Zou &amp; Hastie, 2005)}\\
 <h2>Objectives</h2>
 <p>The objectives of <strong>lessSEM</strong> are to provide …</p>
 <ol style="list-style-type: decimal">
-<li>a flexible framework for regularizing SEM and</li>
-<li>optimizers for other SEM packages which can be used with an
-interface similar to <code>optim</code>.</li>
+<li>a flexible framework for regularizing SEM.</li>
+<li>optimizers for other packages that can handle non-differentiable
+penalty functions.</li>
 </ol>
 </div>
 <div id="regularizing-sem" class="section level2">
@@ -417,38 +424,38 @@ interface similar to <code>optim</code>.</li>
 <div id="setting-up-a-model" class="section level3">
 <h3>Setting up a model</h3>
 <p>First, start with lavaan:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lessSEM)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4321</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># let&#39;s simulate data for a simple </span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># cfa with 7 observed variables</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> lessSEM<span class="sc">::</span><span class="fu">simulateExampleData</span>(<span class="at">N =</span> <span class="dv">50</span>, </span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">loadings =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">4</span>),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">3</span>))</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              y1         y2         y3         y4          y5         y6         y7</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] -0.1737175 -0.1970204  1.1888412  1.8520403  0.16257957  1.8825526  1.1383999</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] -1.5179940  0.9029781 -0.1726986 -0.3596920 -0.02092956 -0.5798953  0.9020861</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]  0.6136418  0.2578986 -0.1359237  0.7703602  0.23502463  0.2001872  0.7986506</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4,] -0.5920933  0.2157830  1.6784758  1.8568433 -0.60458482  0.2219578  0.4736751</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5,]  0.0763996 -1.1442382 -2.8122156  0.4899892  0.03453494  2.0457604 -2.6721417</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [6,]  2.2504896  2.9742206  0.4353705  1.2338364  0.04693253 -0.6438847 -1.1386235</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># we assume a single factor structure</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>lavaanSyntax <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="st">      f =~ l1*y1 + l2*y2 + l3*y3 + l4*y4 + l5*y5 + l6*y6 + l7*y7 </span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="st">      f ~~ 1*f</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the model with lavaan</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">cfa</span>(lavaanSyntax, </span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> data)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(lessSEM)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4321</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># let&#39;s simulate data for a simple </span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># cfa with 7 observed variables</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>data <span class="ot">&lt;-</span> lessSEM<span class="sc">::</span><span class="fu">simulateExampleData</span>(<span class="at">N =</span> <span class="dv">50</span>, </span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>                                     <span class="at">loadings =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">4</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>                                                  <span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">3</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">head</span>(data)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt;              y1         y2         y3         y4          y5         y6         y7</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; [1,] -0.1737175 -0.1970204  1.1888412  1.8520403  0.16257957  1.8825526  1.1383999</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; [2,] -1.5179940  0.9029781 -0.1726986 -0.3596920 -0.02092956 -0.5798953  0.9020861</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; [3,]  0.6136418  0.2578986 -0.1359237  0.7703602  0.23502463  0.2001872  0.7986506</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; [4,] -0.5920933  0.2157830  1.6784758  1.8568433 -0.60458482  0.2219578  0.4736751</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; [5,]  0.0763996 -1.1442382 -2.8122156  0.4899892  0.03453494  2.0457604 -2.6721417</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; [6,]  2.2504896  2.9742206  0.4353705  1.2338364  0.04693253 -0.6438847 -1.1386235</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co"># we assume a single factor structure</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>lavaanSyntax <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="st">      f =~ l1*y1 + l2*y2 + l3*y3 + l4*y4 + l5*y5 + l6*y6 + l7*y7 </span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="st">      f ~~ 1*f</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="st">      &quot;</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co"># estimate the model with lavaan</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">cfa</span>(lavaanSyntax, </span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>                   <span class="at">data =</span> data)</span></code></pre></div>
 <p>Next, decide which parameters should be regularized. Let’s go with
 l5-l7. In <strong>lessSEM</strong>, we always use the parameter labels
 to specify which parameters should be regularized!</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>regularized <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;l5&quot;</span>, <span class="st">&quot;l6&quot;</span>, <span class="st">&quot;l7&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tip: we can use paste to make this easier:</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>regularized <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;l&quot;</span>, <span class="dv">5</span><span class="sc">:</span><span class="dv">7</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>regularized <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;l5&quot;</span>, <span class="st">&quot;l6&quot;</span>, <span class="st">&quot;l7&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># tip: we can use paste0 to make this easier:</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>regularized <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">&quot;l&quot;</span>, <span class="dv">5</span><span class="sc">:</span><span class="dv">7</span>)</span></code></pre></div>
 <p>Finally, we set up the regularized model. To this end, we must first
 decide which penalty function we want to use. If we want to shrink
 parameters without setting them to zero, we can use ridge
@@ -457,14 +464,15 @@ functions mentioned above. In <strong>lessSEM</strong>, there is a
 dedicated function for each of these penalties. The names of these
 functions are identical to the “penalty” column in the table above. For
 instance, let’s have a look at the lasso penalty:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                  <span class="co"># please use much larger nLambdas in practice (e.g., 100)!</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">5</span>)</span></code></pre></div>
 <p>Plot the paths to see what is going on:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fitLasso)</span></code></pre></div>
-<div class="figure">
-<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAH4CAMAAACR9g9NAAAA4VBMVEUAAAAAADoAAGYAOmYAOpAAZmYAZpAAZrYAgIAzMzM6AAA6ADo6AGY6OgA6OmY6OpA6kJA6kLY6kNtNTU1NTW5NTY5NbqtNjshmAABmADpmAGZmOgBmkJBmtttmtv9uTU1uTY5ujshuq+SOTU2OTY6ObquOjsiOq+SOyP+QOgCQOjqQ2/+rbk2r5P+2ZgC225C2/9u2///Ijk3Ijm7Ijo7Iq47IyP/I///bkDrbtmbb25Db/7bb/9vb///kq27kq47k///r6+v/tmb/yI7/25D/5Kv//7b//8j//9v//+T///8NrL8LAAAACXBIWXMAAAsSAAALEgHS3X78AAAXbUlEQVR4nO2di3rbxhGFadetKNetG9O1naRVWiWOpchyKzmp1LS2VV1tvP8DFQBBEqRw2d3ZGZwlznyJQFM43IP5tbgQmN1JxhhlTIY2wBgmCH6kQfAjDYIfaRD8SIPgRxoB4K8fT/J4eNLy2ycnrf+q4vbro9XnPDjyd8CQRwj4Eua7Rx86ftsZC/Dlmpdu5B0+luETweDbSPiC/3y4594oI1qIwN++Kvf4+T77d4d7xRv5/8XiMt+F72TXf/z24T+enBT/mEz2Fivn//ztJvjV+ifzl58P//J4spN/7k421+U/8j3D/CMW6/EgIYnwXf1Oyez80YfbV/liUgNfvJHvwa8f7y066sbKD+q7+of19auXnw+LNR99uP79UaUrVl68LNbL/3YuWw42DJcIPrl7VnX6r48KADmwWo/Pyt15Tq12PlBfueHkrlq/elkgrv6vdNWnL9Yr/kAYkgjs8UWvm5N7cJR3wgWhCnzxiwdLVkUvXVt57RhfvlquX72sg5/rFh+7WC/f60/IXhChu/riZLwid6/Hl11y1UkvH9ZOBi8bwNfXn7/c6PHVyrWX5Ue1XVEyHEJyOVegqQ7p+TG+XDwswBdE3i17fHW9Vl/5wTr42vrVyxr4Slf8RSxeVn8gBC+JYPC3r3ay+bl2sQsuTtTPJ5M/fVNg+Xw4mXy12Pf/87A6kq9W/tNGj6+tX72sga90+S8WL+d7HJ7VyyLSV7bV3puRTEQAz91uihGjx59zt5te8O7cSIPgRxoEP9Ig+JFGAPj/NUTjm13hLTBoYiQbQfD2AghPBG8vgPBE8PYCCE8Eby+A8ETw9gIITwRvL4DwRPD2AghPBG8vgPBE8PYCCE8Eby+A8ETw9gIITwRvL4DwRPD2AghPBG8vgPBE8PYCCE8Eby+A8ETw9gIITwRvL4DwRPD2AghPBG8vgPAUFfw0vj+xAlAA4Sluj596ok8zZ1IBhKe44PNO74U+zZxJBRCeYoP329+nmTOpAMJTfPA+nT7NnEkFEJ4UwHt0+jRzJhVAeFIB79zp08yZVADhSQe8K/o0cyYVQHjSAu+2v08zZ1IBhCc98C6dPs2cSQUQnhTBO3T6NHMmFUB4UgXf2+nTzJlUAOFJF3wf+jRzJhVAeNIG372/TzNnUgGEJ33wXZ0+zZxJBRCegsH7xHSq+/mM0FB/EKOl06fZWaQCCE9G4Fv292nmTCqA8GQFvrnTp5kzqQDCkx34pk6fZs6kAghPhuAb0KeZM6kAwpMp+Hv7+zRzJhVAeDIGv9Hp08yZVADhyRr8Ovo0cyYVQHiyB1/f36eZM6kAwtMQ4FedPs2cSQUQngYBv+z0aeZMKoDwNBD4qtOnmTOpAMLTUODn6NPMmVQA4Wk48MX+Ps2cSQUQnoYE71loF9QEogDC06Dg/5fpF1YDCiA8DQzeu9Mj5EwqgPA0NHj1wmpAAYSn4cErF1YDCiA8IYBXLawGFEB4ggDvgR4hZ1IBhCcQ8M77e4ScSQUQnmDAaxVWAwogPOGAVyqsBhRAeEICr1JYDSiA8AQF3gE9Qs6kAghPYOB79/cIOZMKIDzBgY9dWA0ogPCEB74bPULOpAIIT4jgu/b3CDmTCiA8YYJv7/QIOZMKIDyBgo9XWA0ogPAECz5WYTWgAMITLvhm9Ag5kwogPCGDb9rfI+RMKoDwhA0+QmE1oADCEzh4eWE1oADCEzx4aWE1oADCEz54YWE1oADCUwrgRYXVgAIIT2mAFxRWAwogPCUCfokeIWdSAYSnZMBX+3uEnEkFEJ4SAh9WWA0ogPCUEvigwmpAAYSnTvBf3s5eLperH8OBDyisRkiyfRNC8Ff72enBYrn6MSB4g3mLCT7LPh0XzKvl6keW7e7ueh4ZIsaU4RntuWwB/74CXy5XP8rfGf1h2jdhthFT952XxFNLK53gW3s8wUsEhcKDekgTC0F7M53gEY/xWyDwpB7SxGKf0rFGF/jyHP7u9QXOWT0iR09BccxVbsJln9IJviti+dNWYAnmNCwue3tr0QjeTLCkob9T2bZv7qA4+gnqfVB/p0LwGIKp2WNEzjcxCV5dcP94q+Vp6vHYAsHrChrPsnQ8+T2hRvCKgrZzawVP3gcTgtcSdFxRKRxNvFsgeBVB93W0/tGE4IcQ9H57EtNTaG0pwUcWuHwPH81Ta2MEbytwvPsSx1NXYwRvKHC/5xbDk3SMKIKPI/C60yr2FOEsguAjCHzvr4tPIyK0QPBSgfdTFRanEQSvLCgwWG6E6x8ZweveCbOdLjPq05kEHyjwuRMW2MS6IPLTmQQfIpj63QkLaWJdEP/0keC9BZsQ1DdC5fSR4P0EDRCUN0KpRpjgPQTNXU9zI0LPHwke4oZIqEJzABiCdxLIbogEKZQfyyX4fkFfTYpvCy4K9cdyCb5H4FCT4ttCr+JemwRvDN7pQir2RgQ9SeUtIPhWgevlc9SNiHThQPDBAsVRC9oV0S4cCD74hohiCy0Ky+exCb5NYA3e8nns+RoE3yRQHafkvsLyeezFGgTfIPC6KSLdCIeTSILfPvCRnqTyFhB8g0D50cmaQuuKkeBDBNpDUi0Vpg/ib65B8PcERuA9Hq8geAvwvo+7BG6EyQCHHWsQ/EboPyVfnkbonj8SvLfAYPRBiCG4CX4jLMAjDLpP8OthMAeG0ZCmfWuEgt/O6BjaPaEm3IM9vgr16Y6MxrLlrt4Ti3ILQJPnEXwttGe2Q5ouk+BroQt+dQ1H8FjgVffDaFNiE/wyVAeTtxq92llA8MtQBC+tryV4xSb0zrzMhi33ERB8FXpnXib1Ed4Cgq9CC7zdePV+AoKfh1JlaugQw/oCgi9D6VrLrjDGW0DwZaiAb5/eM1oT4QKCL6JOKFYLMYdSIHidJjS+XTGuiPIWEPwmoygtRB5Dg+ATAW9fCuctIPhNSvIW4g+eQvAaX6hGbsFyThqBgOAjgx+oBtJbMHrw8hFK6wLLyYhkgrGDj3oHJd40AvoCgo/Xgt5wSQQf/d5ZvBaGLX71FowbfLwx5SLPH6EvIPgoLZhOPxZFMGrwsW6WAxS/egvGDL4Zl3cLtvPOxRIQvLQF/9pXgh8WfJTHY4wnHIwnGC/4KI/HBFVZEnzq4I1nmowqGC14+UjRi5M6gk8JvPyBuPAH8Ql+uJx1XIG5tSCZIorgkwW/dulO8OmAFz4Cazy3LMHHakL2CKx4bjCCTxG8+aTCSoIxgu/+br27hRg38Al+mJwJHno3n01aT0Dw7i203IYj+DTAB1c7RKt9JfghchY641PE2QDxwX95O3u5XN59P/vzWf7q+fEIwXc9bLGF4K/2s9ODxfLjQfZx/+7HxHt8WH2T/fzx6oJO8J+OC+ar5dXBzXezFxdZtru763NYwImgMcOnUCONR40W8O8r4NXy7vVFvrh5U/7O6A8zchMh08FHr30F7/Gnsxe/rPX4ux/OivfLdxIFH1DRqDD/Jzj4bOMYf/O3nHt+oL86SBa8f0WjyxO0Wwh+fjb/+qJcns5ms/3Fef5IwOvUvuKD7wojfzGb8J3HVWviV4K3zZlnDbPexK8Eb5ozT46Kta8EjwvepyyK4KHB+4xaoDzxK8Eb5sxjz61e+0rwkOBtZpMeXDAS8M40LSZ+JXiznLlyn6pPMRqmIHhV8IE1kAQPmzNH7oIWlBUEH9SEE/fluTzoRsQWEHwZkhpIggfNWT93WQ0kwWPmzIG7sAVfAcFDgBfXQBI8ZM56uEeogSR4xJx1fxE3zPyfBK+fs85R6Iaa/5PghwU/2PyfBK+es46v3gec/5PgtXPWPu7koPN/EvxQ4DsftUDbCCXBNoNvu9kmGQolhoDgdXM2bRb0PVmFtRFqgrGBVyiFI3isnDXdXlcphdsO8LevJn/96WgLwDfdXgeZBhIR/OfDvXd7108/bCN4rVK4rQB/+83Ju738R/Lg7w0qrlcKtxXgyx5/+Sj5Hr/5QA3UNJCI4Itj/OShQ4dPCzzWNJCQ4J3DyF+YogY6Uy+F2wrwRYd36/JG/oIUa4/Q4U0DiQi+jMtniff4GmrEaSBhwad+Vl/nDpFk+ybCwF8/SRr8irtNKdxWgJ8f45Pe1S+5W5XCbQV49zDy56+owAdPBwixEfqCNfDz/p72Wf10bYGRZPsmxtfj58BNS+G2A/x54j2+IG5cCrcV4G+/Pnq3d7mTbI+f3rtyR0iyfRP+4L85OX/mdB0PGdPAEelHG6u7cz8dXe6k+wXOdIhSuK3o8dnlo/8eJnsdP0wp3HaAdw4jfx6KoUrhtgL87SuX3o4IPsdO8B6Cez0+v55zOalHAz9te9oCIcn2TYTt6i+Tu46ftnKHSLJ9E+Po8fODO8F7CTbAJ3iMr87phqt63grw7mHkr1exeVNG3ATBpwB+eQlH8J6CpMGvrtyHHOeA4I1zVvvCJuZczwQPDn7tkcqITRA8NPi172cJ3l+QJvj1r+Xjzu5O8LDgN+7GDD2kDcEb5WwTNMGHCJIDf+/m6+BjGRG8wQbdv+feVxuHkGT7JrYM/LShFI7gwwQJgZ82DVQJMHoZwatu0LR52LqYTVgJIDwlAr5tcjCCDxWkAb6tIgpivEKC19qg+qn8msJltAuEJNs3sQ3g16/gCD6SAB181+RgICOUEnx8f50VUSgjlBJ8bH89FVEELxHggu+riHIcxwwhyfZNJAy+7zF5nDGJCT6iv97JwZzHLURIsn0TiYJ3mByM4IUCQPAuk4MhjUJO8FH89Qw+O1d4DFCLkGT7JpID3zvmMMFHEkCBdxhqulRgzTtA8FJ/rl+9g807QPAyf24jyxN8JAEKeNcJBTJP7hBJtm8iFfDu80hkntwhkmzfRBrgfaYPIfhIguHBe84R5TvHDEKS7ZvAB+87WRDg3EIEH+DPmyPBRxJ0gv/ydvZyucx/PD9evBMHvP/cYFOEnEkFEJ46wV/tZ6cHi+Xdj7V3YoBvKojqk0DkTCqA8NQJ/tNxQbpa3nw3e3FRvbO7u+t3YLgf05CB5TkYfeRoAf++Al8u81c3bxbvSHt8c0FUrwqjs0gFEJ7awZ/OXvxS7/FZsaP/FAV8W0FUrw4jZ1IBhKfOHr92jP94kF0dRDnGh04R1VQt2xuAAghPneDLc/i71xeLs/qXWYSz+taCqF6htwJUAOGpE3xXBPrrKIjqlXorQAUQnmzBdxVE9Wq9FagCCE+W4EVTROFOFUvw3c0Jp4gi+LgCK/DSKaICLwAhBRCejMBL5w1Bnhya4Fub6y2I6g2Cjy0wAO9QENUX0LOCE3xjcy4FUX0R+pUPqADCkzJ4p4Ko3iD4+AJV8I4FUX1R/xSEnEkFEJ4UwbsWRPUGwScFPtpYZOHf7oMKIDxpgXcviOqL9Q9CyJlUAOFJB7xHQVRvEHwy4H0KonpDcD8PVQDhKT54v4Kovtj8MIScSQUQnmKD9yyI6l2D4JUEccH7Vkj0+pPcwYcVQHiKCj56fdP9D0TImVQA4Sluj4/tj+DVBNDgZc/swAogPCGDbzpyIORMKoDwRPD2AghPwOCFT+nhCiA84YJvvkRAyJlUAOGJ4O0FEJ5gwUufywUWQHgieHsBhCdU8OIHsoEFEJ5Awbd++YuQM6kAwhPB2wsgPGGCl5dgIAsgPEGC77jLh5AzqQDCE8HbCyA8IYKPUHQFLYDwBAi+83EOhJxJBRCeCN5eAOEJD3yUMktoAYQnOPA9z+0h5EwqgPBE8PYCCE9o4OMUVmMLIDyBge99QBshZ1IBhKdg8DrBAeltA6XHxxpKAVsA4Yng7QUQnqDAO5RgIeRMKoDwhAQ+2uAp4AIITwRvL4DwBAQ+2qg56AIITzjg3WqsEXImFUB4Inh7AYQnGPARx8lCF0B4QgHvOpgGQs6kAghPBG8vgPAEAj7myHjwAghPGODdR01CyJlUAOGJ4O0FEJ4gwEcdCxNfAOGJ4O0FEJ4QwPuMi4iQM6kAwhMA+Mij3+ILIDwRvL0AwtPw4P0GwEXImVQA4Wlw8LHHu05AAOGJ4O0FEJ6GBu870jlCzqQCCE8Dg48+wn0KAghPBG8vgPA0LHhv7hA5kwogPA0KfppmzqQCCE8Eby+A8DQk+GmiOZMKIDwNCH6aas6kAghPBG8vgPA0HPipr8C/CVABhCeCtxdAeBoM/NRX4N8EqgDC01Dgp74C/yZgBRCeCN5eAOFpIPBTX4F/E7gCCE/DgF98R59mzqQCCE8Eby+A8DQI+OVNuTRzJhVAeBoC/OpmbJo5kwogPBG8vQDC0wDga09fpJkzqQDCkz34+lM3aeZMKoDw1An+y9vZy+Xy42w2289fPT8meJkAwlMn+Kv97PSgtvz57O5HaY9fe8wuzZxJBRCeOsF/Oi6YL5f5/zffzV5cZNnu7q7PYaEeHJgcKVrAv6/AV8ufz0r2b8rfBf5hrj9Xm2ZnkQogPLWDP529+GWtx9/8vXy/fCcU/Mbz1GnmTCqA8NTZ49eP8QXxj/nigOBlAghPneDLs/m71xfzs/sc+vI8PxD8ZgFFmjmTCiA8dYLvipDm7hXOpJkzqQDCE8HbCyA8WYK/XymXZs6kAghPhuAbKiTTzJlUAOGJ4O0FEJ7swDeVRKeZM6kAwpMZ+MZS+DRzJhVAeCJ4ewGEJyvwzWNfpJkzqQDCkxH4ljFP0syZVADhieDtBRCebMC3DXKUZs6kAghPBG8vgPBkAr51VLM0cyYVQHiyAN8+ml2aOZMKIDwRvL0AwpMB+I7hK9PMmVQA4UkffNewpWnmTCqA8ETw9gIIT+rgO8cpTjNnUgGEJ23w3eNTp5kzqQDCE8HbCyA8KYPvGZA+zZxJBRCedMH3TUSQZs6kAghPBG8vgPCkCr535pE0cyYVQHjSBN8/40yaOZMKIDwRvL0AwpMieIcpptLMmVQA4Yng7QUQnvTAu8wpl2bOpAIIT2rgneYSTDNnUgGEJ4K3F0B40gLvNnlomjmTCiA8KYF3nDQ2zZxJBRCeCN5eAOFJB7zrLNFp5kwqgPCkAt55dvA0cyYVQHgieHsBhCcN8M7cE82ZVADhSQG8O/dEcyYVQHgieHsBhKf44D24J5ozqQDCUzD41uCA9AlFxB7v0+ET7SxSAYSn2OC9uCeaM6kAwhPB2wsgPEUG78c90ZxJBRCe4oL35J5ozqQCCE8Eby+A8BQXfHx/9k2MZCMI3l4A4Yng7QUQngjeXgDhieDtBRCeCN5eAOGJ4O0FEJ4I3l4A4Yng7QUQngjeXgDhieDtBRCeCN5eAOGJ4O0FEJ4I3l4A4Yng7QUQngjeXgDhieDtBRCeCN5eAOGJ4O0FEJ4I3l4A4SkYfFPsxvmYYZsY1UYQvGULQBtB8JYtAG1EzGpZRkJB8CMNgh9pEPxIQwD+y9vZy+Vy9SNmrDVx9/3sz2f5q+fHWi2UH667ER9ns9m+1kZk2ccDVxIC8Ff72enBYrn6Ef6BPU3kG/Vx/+7HmJ+/0UL54bobkS9/PtPaiOx0dpA5khCA/3RcNFItVz/CP7CniXx5dXDz3ezFhVYL5Ydrb0T+v9ZG3P0r7xyOJATg31cfXi5XP8I/sKeJfMNeXxRpe6PVQvnh2hvx81mmtRHlrt6RREo9/u6Hs+LNqE3c26dob8TN38s3VTaiBK/f462P8Td/Oyu37CpmE5tnEVfKG1Hy0NqI+SerH+Pnp9qvL7TP6hdNnFYnxFGbsN6IAk30JhYtGJ3VM1IOgh9pEPxIg+BHGgQ/0iD4kQbBXz/90Pzvz4d7A9ixCoIn+JFGDvp8MtnJrv/47eSrw8mzYrmTZeeT33y7l5W/2cog+Ounvz79cPvNyfXvj4r/nv76eC/v69dPTq4f712XvxnaoUoQfA73+vHkwVGxLP779clJdv7s/FmWvdvLyt8M7VAlCP766b8fntx+3Qj+svzN0A5VguBz8DvZZa3HL3b1t6/2LsvfDO1QJQj++ul/Xk1++2pvCX5xcvfgD3u35W+GdqgSBD/SIPiRBsGPNAh+pEHwIw2CH2kQ/Ejj/wZcY4f646gKAAAAAElFTkSuQmCC" alt />
-<p class="caption">plot of chunk unnamed-chunk-6</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">plot</span>(fitLasso)</span></code></pre></div>
+<div class="float">
+<img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-6" />
+<div class="figcaption">plot of chunk unnamed-chunk-6</div>
 </div>
 <p>Note that the parameters are pulled towards zero as <span class="math inline">\(\lambda\)</span> increases. Note also that we did
 not specify specific values for <span class="math inline">\(\lambda\)</span> in the lasso function above.
@@ -475,113 +483,129 @@ parameters to zero. This is currently not supported for any of the other
 penalties.</p>
 <p>The plots returned by <strong>lessSEM</strong> are either
 <strong>ggplot2</strong> elements (in case of a single tuning
-parameter), or created with plotly (in case of 2 tuning parameters). You
-can change a plot post-hoc:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fitLasso) <span class="sc">+</span> ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
-<div class="figure">
-<img src="data:image/png;base64,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" alt />
-<p class="caption">plot of chunk unnamed-chunk-7</p>
+parameter), or created with <strong>plotly</strong> (in case of 2 tuning
+parameters). You can change a plot post-hoc:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">plot</span>(fitLasso) <span class="sc">+</span> </span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="float">
+<img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-7" />
+<div class="figcaption">plot of chunk unnamed-chunk-7</div>
 </div>
 <p>The <code>coef</code> function gives access to all parameter
 estimates:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fitLasso)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||         l2         l3         l4         l5         l6</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.1034  1.0000 ||--||     0.7523     0.7536     0.5742          .          .</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0776  1.0000 ||--||     0.7477     0.7480     0.5720    -0.0104          .</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0517  1.0000 ||--||     0.7399     0.7396     0.5688    -0.0266          .</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0259  1.0000 ||--||     0.7301     0.7332     0.5677    -0.0418          .</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0000  1.0000 ||--||     0.7239     0.7319     0.5688    -0.0562     0.0166</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          l7     y1~~y1     y2~~y2     y3~~y3     y4~~y4     y5~~y5     y6~~y6     y7~~y7</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8812     1.1477     1.9273     1.0804     0.5710     0.9628     1.5320</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8742     1.1523     1.9331     1.0818     0.5705     0.9628     1.5320</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     -0.0090     0.8631     1.1602     1.9417     1.0838     0.5697     0.9628     1.5312</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     -0.0478     0.8528     1.1706     1.9482     1.0841     0.5689     0.9628     1.5282</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     -0.0894     0.8491     1.1779     1.9496     1.0830     0.5685     0.9626     1.5255</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">coef</span>(fitLasso)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                           </span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                        </span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||         l2         l3         l4         l5         l6         l7     y1~~y1     y2~~y2     y3~~y3</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;   0.1034  1.0000 ||--||     0.7523     0.7536     0.5742          .          .          .     0.8812     1.1477     1.9273</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;   0.0776  1.0000 ||--||     0.7477     0.7480     0.5720    -0.0104          .          .     0.8742     1.1523     1.9331</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;   0.0517  1.0000 ||--||     0.7399     0.7396     0.5688    -0.0266          .    -0.0090     0.8631     1.1602     1.9417</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;   0.0259  1.0000 ||--||     0.7301     0.7332     0.5677    -0.0418          .    -0.0478     0.8528     1.1706     1.9482</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;   0.0000  1.0000 ||--||     0.7239     0.7319     0.5688    -0.0562     0.0166    -0.0894     0.8491     1.1779     1.9496</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;                                             </span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;                                             </span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ----------</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y5~~y5     y6~~y6     y7~~y7</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ==========</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;      1.0804     0.5710     0.9628     1.5320</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt;      1.0818     0.5705     0.9628     1.5320</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;      1.0838     0.5697     0.9628     1.5312</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt;      1.0841     0.5689     0.9628     1.5282</span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt;      1.0830     0.5685     0.9626     1.5255</span></span></code></pre></div>
+<p>If you are only interested in the estimates, use</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">estimates</span>(fitLasso)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt;             l2        l3        l4          l5         l6           l7    y1~~y1   y2~~y2   y3~~y3   y4~~y4    y5~~y5</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; [1,] 0.7522904 0.7536140 0.5742228  0.00000000 0.00000000  0.000000000 0.8812416 1.147737 1.927350 1.080353 0.5710041</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; [2,] 0.7476862 0.7480112 0.5720039 -0.01042497 0.00000000  0.000000000 0.8741617 1.152318 1.933141 1.081837 0.5704936</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; [3,] 0.7398991 0.7395932 0.5688300 -0.02660810 0.00000000 -0.008974807 0.8630783 1.160213 1.941722 1.083766 0.5696926</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; [4,] 0.7301019 0.7331646 0.5677000 -0.04181445 0.00000000 -0.047849804 0.8528254 1.170580 1.948163 1.084065 0.5689390</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; [5,] 0.7239003 0.7318701 0.5688230 -0.05624391 0.01658325 -0.089365627 0.8491201 1.177878 1.949609 1.082966 0.5684702</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;         y6~~y6   y7~~y7</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; [1,] 0.9628056 1.531997</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; [2,] 0.9628058 1.532015</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; [3,] 0.9628057 1.531243</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; [4,] 0.9628055 1.528245</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; [5,] 0.9625805 1.525473</span></span></code></pre></div>
 <p>Now, let’s assume you also want to try out the scad penalty. In this
 case, all you have to do is to replace the <code>lasso()</code> function
 with the <code>scad()</code> function:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fitScad <span class="ot">&lt;-</span> <span class="fu">scad</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">regularized =</span> regularized,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="at">length.out =</span> <span class="dv">4</span>),</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">thetas =</span> <span class="fu">seq</span>(<span class="fl">2.1</span>, <span class="dv">5</span>,<span class="at">length.out =</span> <span class="dv">2</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>fitScad <span class="ot">&lt;-</span> <span class="fu">scad</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>                <span class="at">regularized =</span> regularized,</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>                <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="at">length.out =</span> <span class="dv">4</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                <span class="at">thetas =</span> <span class="fu">seq</span>(<span class="fl">2.1</span>, <span class="dv">5</span>,<span class="at">length.out =</span> <span class="dv">2</span>))</span></code></pre></div>
 <p>The scad penalty has two tuning parmeters <span class="math inline">\(\lambda\)</span> and <span class="math inline">\(\theta\)</span>. The naming follows that used by
 Gong et al. (2013). We can plot the results again, however this requires
 the <strong>plotly</strong> package and is currently not supported in
 Rmarkdown.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fitScad)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">plot</span>(fitScad)</span></code></pre></div>
 <p>The parameter estimates can again be accessed with the
 <code>coef()</code> function:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fitScad)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lambda   theta ||--||         l2         l3         l4         l5         l6</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0000  2.1000 ||--||     0.7240     0.7320     0.5689    -0.0562     0.0166</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.3333  2.1000 ||--||     0.7520     0.7533     0.5741          .          .</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.6667  2.1000 ||--||     0.7522     0.7535     0.5742          .          .</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   1.0000  2.1000 ||--||     0.7523     0.7536     0.5742          .          .</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.0000  5.0000 ||--||     0.7244     0.7326     0.5690    -0.0561     0.0167</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.3333  5.0000 ||--||     0.7520     0.7533     0.5741          .          .</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.6667  5.0000 ||--||     0.7522     0.7535     0.5742          .          .</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   1.0000  5.0000 ||--||     0.7523     0.7536     0.5742          .          .</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          l7     y1~~y1     y2~~y2     y3~~y3     y4~~y4     y5~~y5     y6~~y6     y7~~y7</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     -0.0894     0.8492     1.1778     1.9495     1.0829     0.5684     0.9626     1.5255</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8808     1.1480     1.9277     1.0804     0.5710     0.9628     1.5320</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8812     1.1478     1.9274     1.0804     0.5710     0.9628     1.5320</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8812     1.1478     1.9274     1.0804     0.5710     0.9628     1.5320</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     -0.0894     0.8499     1.1774     1.9489     1.0828     0.5685     0.9626     1.5255</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8808     1.1480     1.9277     1.0804     0.5710     0.9628     1.5320</span></span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8812     1.1478     1.9274     1.0804     0.5710     0.9628     1.5320</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8812     1.1478     1.9274     1.0804     0.5710     0.9628     1.5320</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">coef</span>(fitScad)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                           </span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                        </span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt;   lambda   theta ||--||         l2         l3         l4         l5         l6         l7     y1~~y1     y2~~y2     y3~~y3</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt;   0.0000  2.1000 ||--||     0.7240     0.7320     0.5689    -0.0562     0.0166    -0.0894     0.8492     1.1778     1.9495</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt;   0.3333  2.1000 ||--||     0.7523     0.7535     0.5742          .          .          .     0.8812     1.1478     1.9274</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt;   0.6667  2.1000 ||--||     0.7522     0.7536     0.5742          .          .          .     0.8812     1.1478     1.9274</span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt;   1.0000  2.1000 ||--||     0.7522     0.7536     0.5742          .          .          .     0.8812     1.1478     1.9274</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt;   0.0000  5.0000 ||--||     0.7242     0.7323     0.5690    -0.0562     0.0166    -0.0894     0.8495     1.1776     1.9493</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="co">#&gt;   0.3333  5.0000 ||--||     0.7522     0.7535     0.5740          .          .          .     0.8811     1.1479     1.9275</span></span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt;   0.6667  5.0000 ||--||     0.7522     0.7535     0.5742          .          .          .     0.8811     1.1479     1.9274</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt;   1.0000  5.0000 ||--||     0.7522     0.7535     0.5742          .          .          .     0.8811     1.1478     1.9275</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt;                                             </span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt;                                             </span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ----------</span></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y5~~y5     y6~~y6     y7~~y7</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ==========</span></span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="co">#&gt;      1.0829     0.5684     0.9626     1.5255</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="co">#&gt;      1.0804     0.5710     0.9628     1.5320</span></span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="co">#&gt;      1.0804     0.5710     0.9628     1.5320</span></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt;      1.0804     0.5710     0.9628     1.5320</span></span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="co">#&gt;      1.0829     0.5684     0.9626     1.5255</span></span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a><span class="co">#&gt;      1.0805     0.5711     0.9628     1.5320</span></span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a><span class="co">#&gt;      1.0804     0.5710     0.9628     1.5320</span></span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a><span class="co">#&gt;      1.0804     0.5710     0.9628     1.5320</span></span></code></pre></div>
 </div>
 <div id="selecting-a-model" class="section level3">
 <h3>Selecting a model</h3>
 <p>To select a model and report the final parameter estimates, you can
-use the AIC or BIC (other information criteria are also possible, but
-currently not implemented). There are two ways to use these information
+use the AIC or BIC. There are two ways to use these information
 criteria.</p>
 <p>First, you can compute them and select the model yourself:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>AICs <span class="ot">&lt;-</span> <span class="fu">AIC</span>(fitLasso)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(AICs)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       lambda alpha     m2LL  regM2LL nonZeroParameters convergence      AIC</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 0.10340887     1 1071.078 1071.078                10        TRUE 1091.078</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 0.07755666     1 1071.033 1071.074                11        TRUE 1093.033</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 0.05170444     1 1070.956 1071.048                12        TRUE 1094.956</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 0.02585222     1 1070.851 1070.967                12        TRUE 1094.851</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 0.00000000     1 1070.810 1070.810                13        TRUE 1096.810</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>fitLasso<span class="sc">@</span>parameters[<span class="fu">which.min</span>(AICs<span class="sc">$</span>AIC),]</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      lambda alpha        l2       l3        l4 l5 l6 l7    y1~~y1   y2~~y2  y3~~y3</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 0.1034089     1 0.7522904 0.753614 0.5742228  0  0  0 0.8812416 1.147737 1.92735</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     y4~~y4    y5~~y5    y6~~y6   y7~~y7</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 1.080353 0.5710041 0.9628056 1.531997</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>AICs <span class="ot">&lt;-</span> <span class="fu">AIC</span>(fitLasso)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">head</span>(AICs)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt;       lambda alpha objectiveValue regObjectiveValue     m2LL  regM2LL nonZeroParameters convergence      AIC</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; 1 0.10340887     1       1071.078          1071.078 1071.078 1071.078                10        TRUE 1091.078</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; 2 0.07755666     1       1071.033          1071.074 1071.033 1071.074                11        TRUE 1093.033</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; 3 0.05170444     1       1070.956          1071.048 1070.956 1071.048                12        TRUE 1094.956</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; 4 0.02585222     1       1070.851          1070.967 1070.851 1070.967                12        TRUE 1094.851</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; 5 0.00000000     1       1070.810          1070.810 1070.810 1070.810                13        TRUE 1096.810</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>fitLasso<span class="sc">@</span>parameters[<span class="fu">which.min</span>(AICs<span class="sc">$</span>AIC),]</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt;      lambda alpha        l2       l3        l4 l5 l6 l7    y1~~y1   y2~~y2  y3~~y3   y4~~y4    y5~~y5    y6~~y6   y7~~y7</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt; 1 0.1034089     1 0.7522904 0.753614 0.5742228  0  0  0 0.8812416 1.147737 1.92735 1.080353 0.5710041 0.9628056 1.531997</span></span></code></pre></div>
 <p>An easier way is to use the <code>coef()</code> function again:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fitLasso, <span class="at">criterion =</span> <span class="st">&quot;AIC&quot;</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||         l2         l3         l4         l5         l6</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.1034  1.0000 ||--||     0.7523     0.7536     0.5742          .          .</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          l7     y1~~y1     y2~~y2     y3~~y3     y4~~y4     y5~~y5     y6~~y6     y7~~y7</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8812     1.1477     1.9273     1.0804     0.5710     0.9628     1.5320</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">coef</span>(fitLasso, <span class="at">criterion =</span> <span class="st">&quot;AIC&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                           </span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                        </span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||         l2         l3         l4         l5         l6         l7     y1~~y1     y2~~y2     y3~~y3</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt;   0.1034  1.0000 ||--||     0.7523     0.7536     0.5742          .          .          .     0.8812     1.1477     1.9273</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt;                                             </span></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt;                                             </span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ----------</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y5~~y5     y6~~y6     y7~~y7</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ==========</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt;      1.0804     0.5710     0.9628     1.5320</span></span></code></pre></div>
+<p>Alternatively, you can extract just the estimates with:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">estimates</span>(fitLasso, <span class="at">criterion =</span> <span class="st">&quot;AIC&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt;             l2       l3        l4 l5 l6 l7    y1~~y1   y2~~y2  y3~~y3   y4~~y4    y5~~y5    y6~~y6   y7~~y7</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; [1,] 0.7522904 0.753614 0.5742228  0  0  0 0.8812416 1.147737 1.92735 1.080353 0.5710041 0.9628056 1.531997</span></span></code></pre></div>
 <div id="cross-validation" class="section level4">
 <h4>Cross-Validation</h4>
 <p>A very good alternative to information criteria is the use of
@@ -589,110 +613,108 @@ cross-validation. In <strong>lessSEM</strong>, there is a dedicated
 cross-validation function for each of the penalties discussed above.
 Let’s look at the <code>lsp()</code> penalty this time. Now, for your
 non-cross-validated lsp, you would use</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fitLsp <span class="ot">&lt;-</span> <span class="fu">lsp</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">regularized =</span> regularized,</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>),</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">thetas =</span> <span class="fu">seq</span>(.<span class="dv">1</span>,<span class="dv">2</span>,<span class="at">length.out =</span> <span class="dv">4</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>fitLsp <span class="ot">&lt;-</span> <span class="fu">lsp</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>              <span class="at">regularized =</span> regularized,</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>              <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>),</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>              <span class="at">thetas =</span> <span class="fu">seq</span>(.<span class="dv">1</span>,<span class="dv">2</span>,<span class="at">length.out =</span> <span class="dv">4</span>))</span></code></pre></div>
 <p>To use a cross-validated version of the lsp, simply use the
 <code>cv</code> prefix. The function is called <code>cvLsp()</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fitCvLsp <span class="ot">&lt;-</span> <span class="fu">cvLsp</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>),</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">thetas =</span> <span class="fu">seq</span>(.<span class="dv">1</span>,<span class="dv">2</span>,<span class="at">length.out =</span> <span class="dv">4</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>fitCvLsp <span class="ot">&lt;-</span> <span class="fu">cvLsp</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>                  <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>),</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>                  <span class="at">thetas =</span> <span class="fu">seq</span>(.<span class="dv">1</span>,<span class="dv">2</span>,<span class="at">length.out =</span> <span class="dv">4</span>))</span></code></pre></div>
 <p>The best model can now be accessed with</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fitCvLsp)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lambda   theta ||--||         l2         l3         l4         l5         l6</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   1.0000  0.1000 ||--||     0.7520     0.7533     0.5741          .          .</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          l7     y1~~y1     y2~~y2     y3~~y3     y4~~y4     y5~~y5     y6~~y6     y7~~y7</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .     0.8808     1.1480     1.9277     1.0804     0.5710     0.9628     1.5320</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">coef</span>(fitCvLsp)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                           </span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                        </span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt;   lambda   theta ||--||         l2         l3         l4         l5         l6         l7     y1~~y1     y2~~y2     y3~~y3</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt;   1.0000  0.1000 ||--||     0.7523     0.7536     0.5742          .          .          .     0.8813     1.1477     1.9273</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt;                                             </span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt;                                             </span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ----------</span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y5~~y5     y6~~y6     y7~~y7</span></span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ==========</span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="co">#&gt;      1.0804     0.5710     0.9628     1.5320</span></span></code></pre></div>
 </div>
 </div>
 <div id="missing-data" class="section level3">
 <h3>Missing Data</h3>
 <p>Most psychological data sets will have missing data. In
-<strong>lessSEM</strong>, we follow the example of
-<strong>regsem</strong> and use the full information maximum likelihood
-function to account for this missingness. Identical to
-<strong>regsem</strong>, <strong>lessSEM</strong> expects that you
-already use the full information maximum likelihood method in
-<strong>lavaan</strong>.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># let&#39;s simulate data for a simple </span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># cfa with 7 observed variables</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># and 10 % missing data</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> lessSEM<span class="sc">::</span><span class="fu">simulateExampleData</span>(<span class="at">N =</span> <span class="dv">100</span>, </span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">loadings =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">4</span>),</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                                                  <span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">3</span>)),</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">percentMissing =</span> <span class="dv">10</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               y1         y2         y3          y4         y5        y6         y7</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  0.60367543 -0.3206755 -0.5712115  0.36626658  0.6138552 0.8207451  0.6346473</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,]  0.37497661  2.0100766 -1.5925242 -0.02983920  0.2409065 1.1250778  0.8865902</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]          NA  0.8134143  1.7803075  3.27710938 -0.3651732        NA -0.8283463</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [4,] -0.04379503  0.1369219 -1.9424719  0.40304282 -0.6435542 1.5412868  0.0635044</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5,] -0.32969221         NA -1.6536493 -2.20991516  1.2462449 0.6725163         NA</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [6,]  0.61738032  0.9116425  0.9196841  0.03340633  0.5553805 0.1209500  2.0956358</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co"># we assume a single factor structure</span></span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>lavaanSyntax <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="st">      f =~ l1*y1 + l2*y2 + l3*y3 + l4*y4 + l5*y5 + l6*y6 + l7*y7 </span></span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="st">      f ~~ 1*f</span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="st">      &quot;</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the model with lavaan</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">cfa</span>(lavaanSyntax, </span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> data,</span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>                   <span class="at">missing =</span> <span class="st">&quot;ml&quot;</span>) <span class="co"># important: use fiml for missing data</span></span></code></pre></div>
+<strong>lessSEM</strong>, we use the full information maximum likelihood
+function to account for this missingness. <strong>lessSEM</strong>
+expects that you already use the full information maximum likelihood
+method in <strong>lavaan</strong>.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># let&#39;s simulate data for a simple </span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co"># cfa with 7 observed variables</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co"># and 10 % missing data</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>data <span class="ot">&lt;-</span> lessSEM<span class="sc">::</span><span class="fu">simulateExampleData</span>(<span class="at">N =</span> <span class="dv">100</span>, </span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>                                     <span class="at">loadings =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>,<span class="dv">4</span>),</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>                                                  <span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">3</span>)),</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>                                     <span class="at">percentMissing =</span> <span class="dv">10</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>)</span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="fu">head</span>(data)</span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co">#&gt;               y1         y2         y3          y4         y5        y6         y7</span></span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#&gt; [1,]  0.60367543 -0.3206755 -0.5712115  0.36626658  0.6138552 0.8207451  0.6346473</span></span>
+<span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="co">#&gt; [2,]  0.37497661  2.0100766 -1.5925242 -0.02983920  0.2409065 1.1250778  0.8865902</span></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#&gt; [3,]          NA  0.8134143  1.7803075  3.27710938 -0.3651732        NA -0.8283463</span></span>
+<span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a><span class="co">#&gt; [4,] -0.04379503  0.1369219 -1.9424719  0.40304282 -0.6435542 1.5412868  0.0635044</span></span>
+<span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a><span class="co">#&gt; [5,] -0.32969221         NA -1.6536493 -2.20991516  1.2462449 0.6725163         NA</span></span>
+<span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a><span class="co">#&gt; [6,]  0.61738032  0.9116425  0.9196841  0.03340633  0.5553805 0.1209500  2.0956358</span></span>
+<span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a></span>
+<span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a><span class="co"># we assume a single factor structure</span></span>
+<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a>lavaanSyntax <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a><span class="st">      f =~ l1*y1 + l2*y2 + l3*y3 + l4*y4 + l5*y5 + l6*y6 + l7*y7 </span></span>
+<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a><span class="st">      f ~~ 1*f</span></span>
+<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a><span class="st">      &quot;</span></span>
+<span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a><span class="co"># estimate the model with lavaan</span></span>
+<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">cfa</span>(lavaanSyntax, </span>
+<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a>                   <span class="at">data =</span> data,</span>
+<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a>                   <span class="at">missing =</span> <span class="st">&quot;ml&quot;</span>) <span class="co"># important: use fiml for missing data</span></span></code></pre></div>
 <p>Note that we added the argument <code>missing = &#39;ml&#39;</code> to the
 <strong>lavaan</strong> model. This tells <strong>lavaan</strong> to use
 the full information maximum likelihood function.</p>
 <p>Next, pass this model to any of the penalty functions in
 <strong>lessSEM</strong>. <strong>lessSEM</strong> will automatically
 switch to the full information maximum likelihood function as well:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">10</span>)</span></code></pre></div>
 <p>To check if <strong>lessSEM</strong> did actually use the full
 information maximum likelihood, we can compare the 2log-likelihood of
 <strong>lavaan</strong> and <strong>lessSEM</strong> when no penalty is
 used (<span class="math inline">\(\lambda = 0\)</span>):</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">lambdas =</span> <span class="dv">0</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fitLasso<span class="sc">@</span>fits<span class="sc">$</span>m2LL</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2034.104</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>                  <span class="at">lambdas =</span> <span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>fitLasso<span class="sc">@</span>fits<span class="sc">$</span>m2LL</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co">#&gt; [1] 2034.104</span></span></code></pre></div>
 <p>Compare this to:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="dv">2</span><span class="sc">*</span><span class="fu">logLik</span>(lavaanModel)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &#39;log Lik.&#39; 2034.104 (df=20)</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="sc">-</span><span class="dv">2</span><span class="sc">*</span><span class="fu">logLik</span>(lavaanModel)</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="co">#&gt; &#39;log Lik.&#39; 2034.104 (df=20)</span></span></code></pre></div>
 </div>
 </div>
 <div id="using-multiple-cores" class="section level2">
 <h2>Using multiple cores</h2>
 <p>By default, <strong>lessSEM</strong> will only use one computer core.
 However, if a model has many parameters, parallel computations can be
-considerably faster. Multi-Core support is therefore provided using the
+faster. Multi-Core support is therefore provided using the
 <strong>RcppParallel</strong> package (Allaire et. al, 2023). To make
 use of multiple cores, the number of cores must be specified in the
 <code>control</code> argument (see below). Before doing that, it makes
 sense to check how many cores the computer has:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RcppParallel)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the number of threads (we call them cores for simplicity, but technically they are threads)</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>RcppParallel<span class="sc">::</span><span class="fu">defaultNumThreads</span>()</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 16</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">library</span>(RcppParallel)</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="co"># Print the number of threads (we call them cores for simplicity, but technically they are threads)</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>RcppParallel<span class="sc">::</span><span class="fu">defaultNumThreads</span>()</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a><span class="co">#&gt; [1] 16</span></span></code></pre></div>
 <p>Note that using all cores can block the computer because there are no
 resources left for other tasks than R. To use 2 cores, we can set
 <code>nCores = 2</code> as follows:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">10</span>,</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">control =</span> <span class="fu">controlGlmnet</span>(<span class="at">nCores =</span> <span class="dv">2</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">10</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>                  <span class="at">control =</span> <span class="fu">controlGlmnet</span>(<span class="at">nCores =</span> <span class="dv">2</span>))</span></code></pre></div>
 <p>Note that multi-core support is only provided for SEM. Using the
 optimizers implemented in <strong>lessSEM</strong> for models other than
 SEM (e.g., in the <a href="https://github.com/jhorzek/lessLM"><strong>lessLM</strong></a>
@@ -701,22 +723,19 @@ package) will not automatically allow for multi-core execution.</p>
 <div id="changing-the-optimizer" class="section level2">
 <h2>Changing the optimizer</h2>
 <p><strong>lessSEM</strong> comes with two specialized optimization
-procedures for elastic-net-type penalties: ista and glmnet. Currently,
-the default is glmnet for all elastic net variants (ridge, lasso,
-adaptive lasso, elastic net) and ista for all other penalties. Ista does
-not require the computation of a Hessian matrix. However, this comes at
-a price: ista optimization tends to call the fit and gradient function a
-lot more than glment. If you are using an elastic-net-type penalty
-(ridge, lasso, adaptive lasso, or elastic net), we recommend that you
+procedures: ista and glmnet. Currently, the default is glmnet for all
+penalties. Ista does not require the computation of a Hessian matrix.
+However, this comes at a price: ista optimization tends to call the fit
+and gradient function a lot more than glment. We recommend that you
 first test the glmnet optimizer and then switch to ista if glmnet
 results in errors due to the Hessian matrix. Switching to ista is done
 as follows:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">10</span>,</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">method =</span> <span class="st">&quot;ista&quot;</span>, <span class="co"># change the method</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">control =</span> <span class="fu">controlIsta</span>() <span class="co"># change the control argument</span></span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                  )</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>fitLasso <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanModel, </span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>                  <span class="at">regularized =</span> regularized,</span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">10</span>,</span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>                  <span class="at">method =</span> <span class="st">&quot;ista&quot;</span>, <span class="co"># change the method</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>                  <span class="at">control =</span> <span class="fu">controlIsta</span>() <span class="co"># change the control argument</span></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a>                  )</span></code></pre></div>
 </div>
 <div id="parameter-transformations" class="section level2">
 <h2>Parameter transformations</h2>
@@ -725,116 +744,110 @@ is explained in detail in the vignette Parameter-transformations (see
 <code>vignette(&quot;Parameter-transformations&quot;, package = &quot;lessSEM&quot;)</code>).
 To provide a short example, let’s have a look at the political democracy
 data set:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># example from ?lavaan::sem</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>modelSyntax <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="st">     dem60 =~ y1 + a*y2 + b*y3 + c*y4</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="st">     dem65 =~ y5 + a*y6 + b*y7 + c*y8</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="st">  # regressions</span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="st">    dem60 ~ ind60</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="st">    dem65 ~ ind60 + dem60</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="st">  # residual correlations</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="st">    y1 ~~ y5</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="st">    y2 ~~ y4 </span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="st">    y3 ~~ y7</span></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="st">    y4 ~~ y8</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a><span class="st">    y6 ~~ y8</span></span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;</span></span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>lavaanFit <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> modelSyntax,</span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> PoliticalDemocracy)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co"># example from ?lavaan::sem</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>modelSyntax <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3</span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="st">     dem60 =~ y1 + a*y2 + b*y3 + c*y4</span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="st">     dem65 =~ y5 + a*y6 + b*y7 + c*y8</span></span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="st">  # regressions</span></span>
+<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="st">    dem60 ~ ind60</span></span>
+<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a><span class="st">    dem65 ~ ind60 + dem60</span></span>
+<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a><span class="st">  # residual correlations</span></span>
+<span id="cb25-14"><a href="#cb25-14" tabindex="-1"></a><span class="st">    y1 ~~ y5</span></span>
+<span id="cb25-15"><a href="#cb25-15" tabindex="-1"></a><span class="st">    y2 ~~ y4 </span></span>
+<span id="cb25-16"><a href="#cb25-16" tabindex="-1"></a><span class="st">    y3 ~~ y7</span></span>
+<span id="cb25-17"><a href="#cb25-17" tabindex="-1"></a><span class="st">    y4 ~~ y8</span></span>
+<span id="cb25-18"><a href="#cb25-18" tabindex="-1"></a><span class="st">    y6 ~~ y8</span></span>
+<span id="cb25-19"><a href="#cb25-19" tabindex="-1"></a><span class="st">&#39;</span></span>
+<span id="cb25-20"><a href="#cb25-20" tabindex="-1"></a></span>
+<span id="cb25-21"><a href="#cb25-21" tabindex="-1"></a>lavaanFit <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> modelSyntax,</span>
+<span id="cb25-22"><a href="#cb25-22" tabindex="-1"></a>                 <span class="at">data =</span> PoliticalDemocracy)</span></code></pre></div>
 <p>Note that in the model estimated above, loadings on the latent
 variables are constrained to equality over time. We could also relax
 this assumption by allowing for time point specific loadings:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>modelSyntax <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="st">     dem60 =~ y1 + a1*y2 + b1*y3 + c1*y4</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="st">     dem65 =~ y5 + a2*y6 + b2*y7 + c2*y8</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="st">  # regressions</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="st">    dem60 ~ ind60</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="st">    dem65 ~ ind60 + dem60</span></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="st">  # residual correlations</span></span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a><span class="st">    y1 ~~ y5</span></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="st">    y2 ~~ y4 </span></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="st">    y3 ~~ y7</span></span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a><span class="st">    y4 ~~ y8</span></span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a><span class="st">    y6 ~~ y8</span></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;</span></span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>lavaanFit <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> modelSyntax,</span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> PoliticalDemocracy)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>modelSyntax <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3</span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="st">     dem60 =~ y1 + a1*y2 + b1*y3 + c1*y4</span></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a><span class="st">     dem65 =~ y5 + a2*y6 + b2*y7 + c2*y8</span></span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a><span class="st">  # regressions</span></span>
+<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a><span class="st">    dem60 ~ ind60</span></span>
+<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a><span class="st">    dem65 ~ ind60 + dem60</span></span>
+<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a><span class="st">  # residual correlations</span></span>
+<span id="cb26-13"><a href="#cb26-13" tabindex="-1"></a><span class="st">    y1 ~~ y5</span></span>
+<span id="cb26-14"><a href="#cb26-14" tabindex="-1"></a><span class="st">    y2 ~~ y4 </span></span>
+<span id="cb26-15"><a href="#cb26-15" tabindex="-1"></a><span class="st">    y3 ~~ y7</span></span>
+<span id="cb26-16"><a href="#cb26-16" tabindex="-1"></a><span class="st">    y4 ~~ y8</span></span>
+<span id="cb26-17"><a href="#cb26-17" tabindex="-1"></a><span class="st">    y6 ~~ y8</span></span>
+<span id="cb26-18"><a href="#cb26-18" tabindex="-1"></a><span class="st">&#39;</span></span>
+<span id="cb26-19"><a href="#cb26-19" tabindex="-1"></a></span>
+<span id="cb26-20"><a href="#cb26-20" tabindex="-1"></a>lavaanFit <span class="ot">&lt;-</span> <span class="fu">sem</span>(<span class="at">model =</span> modelSyntax,</span>
+<span id="cb26-21"><a href="#cb26-21" tabindex="-1"></a>                 <span class="at">data =</span> PoliticalDemocracy)</span></code></pre></div>
 <p>Deciding between both approaches can be difficult as there may be
 some parameters for which equality over time holds, while others violate
 the assumption. Here, transformations can be used to regularize
 differences between parameters. To this end, we define the
 transformations:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>transformations <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="st">// IMPORTANT: Our transformations always have to start with the follwing line:</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="st">parameters: a1, a2, b1, b2, c1, c2, delta_a2, delta_b2, delta_c2</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="st">// In the line above, we defined the names of the parameters which we</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="st">// want to use in our transformations. EACH AND EVERY PARAMETER USED IN</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="st">// THE FOLLOWING MUST BE STATED ABOVE. The line must always start with</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="st">// the keyword &#39;parameters&#39; followed by a colon. The parameters must be</span></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="st">// separated by commata.</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="st">// Comments are added with double-backslash</span></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="st">// Now we can state our transformations:</span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="st">a2 = a1 + delta_a2; // statements must end with semicolon</span></span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="st">b2 = b1 + delta_b2;</span></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a><span class="st">c2 = c1 + delta_c2;</span></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>transformations <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="st">// IMPORTANT: Our transformations always have to start with the follwing line:</span></span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="st">parameters: a1, a2, b1, b2, c1, c2, delta_a2, delta_b2, delta_c2</span></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a><span class="st">// In the line above, we defined the names of the parameters which we</span></span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a><span class="st">// want to use in our transformations. EACH AND EVERY PARAMETER USED IN</span></span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="st">// THE FOLLOWING MUST BE STATED ABOVE. The line must always start with</span></span>
+<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a><span class="st">// the keyword &#39;parameters&#39; followed by a colon. The parameters must be</span></span>
+<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a><span class="st">// separated by commata.</span></span>
+<span id="cb27-10"><a href="#cb27-10" tabindex="-1"></a><span class="st">// Comments are added with double-backslash</span></span>
+<span id="cb27-11"><a href="#cb27-11" tabindex="-1"></a></span>
+<span id="cb27-12"><a href="#cb27-12" tabindex="-1"></a><span class="st">// Now we can state our transformations:</span></span>
+<span id="cb27-13"><a href="#cb27-13" tabindex="-1"></a></span>
+<span id="cb27-14"><a href="#cb27-14" tabindex="-1"></a><span class="st">a2 = a1 + delta_a2; // statements must end with semicolon</span></span>
+<span id="cb27-15"><a href="#cb27-15" tabindex="-1"></a><span class="st">b2 = b1 + delta_b2;</span></span>
+<span id="cb27-16"><a href="#cb27-16" tabindex="-1"></a><span class="st">c2 = c1 + delta_c2;</span></span>
+<span id="cb27-17"><a href="#cb27-17" tabindex="-1"></a><span class="st">&quot;</span></span></code></pre></div>
 <p>Next, we have to pass the <code>transformations</code> variable to
 the penalty function:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>lassoFit <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanFit, </span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;delta_a2&quot;</span>, <span class="st">&quot;delta_b2&quot;</span>, <span class="st">&quot;delta_c2&quot;</span>),<span class="co"># we want to regularize </span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                  <span class="co"># the differences between the parameters</span></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">100</span>,</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                  <span class="co"># Our model modification must make use of the modifyModel - function:</span></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">modifyModel =</span> <span class="fu">modifyModel</span>(<span class="at">transformations =</span> transformations)</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>lassoFit <span class="ot">&lt;-</span> <span class="fu">lasso</span>(<span class="at">lavaanModel =</span> lavaanFit, </span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>                  <span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;delta_a2&quot;</span>, <span class="st">&quot;delta_b2&quot;</span>, <span class="st">&quot;delta_c2&quot;</span>),<span class="co"># we want to regularize </span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>                  <span class="co"># the differences between the parameters</span></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>                  <span class="at">nLambdas =</span> <span class="dv">100</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>                  <span class="co"># Our model modification must make use of the modifyModel - function:</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>                  <span class="at">modifyModel =</span> <span class="fu">modifyModel</span>(<span class="at">transformations =</span> transformations)</span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a>)</span></code></pre></div>
 <p>To check if measurement invariance can be assumed, we can select the
 best model using information criteria:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(lassoFit, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                               </span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                            </span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3         a1         b1         c1</span></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ==========</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   0.2216  1.0000 ||--||     2.1825     1.8189     1.2110     1.1679     1.2340</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                 </span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                 </span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ----------- ----------- ----------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  dem60~ind60 dem65~ind60 dem65~dem60     y1~~y5     y2~~y4     y3~~y7     y4~~y8</span></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  =========== =========== =========== ========== ========== ========== ==========</span></span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       1.4534      0.5935      0.8659     0.5552     1.5947     0.7807     0.6537</span></span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                         </span></span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2     y3~~y3     y4~~y4</span></span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      1.5350     0.0820     0.1177     0.4675     1.7929     7.3843     5.0175     3.4074</span></span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                    </span></span>
-<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                                                                    </span></span>
-<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ------------ ------------ ------------</span></span>
-<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65</span></span>
-<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ============ ============ ============</span></span>
-<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      2.2857     4.8977     3.5510     3.4511       0.4480       3.9408       0.2034</span></span>
-<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
-<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
-<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ----------</span></span>
-<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    delta_a2   delta_b2   delta_c2</span></span>
-<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ==========</span></span>
-<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           .          .          .</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">coef</span>(lassoFit, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                   </span></span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                </span></span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ----------- ----------- -----------</span></span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3         a1         b1         c1 dem60~ind60 dem65~ind60 dem65~dem60</span></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== =========== =========== ===========</span></span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a><span class="co">#&gt;   0.2216  1.0000 ||--||     2.1825     1.8189     1.2110     1.1679     1.2340      1.4534      0.5935      0.8659</span></span>
+<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
+<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a><span class="co">#&gt;      y1~~y5     y2~~y4     y3~~y7     y4~~y8     y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2     y3~~y3</span></span>
+<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
+<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a><span class="co">#&gt;      0.5552     1.5947     0.7807     0.6537     1.5350     0.0820     0.1177     0.4675     1.7929     7.3843     5.0175</span></span>
+<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
+<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
+<span id="cb29-16"><a href="#cb29-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ------------ ------------ ------------ ---------- ----------</span></span>
+<span id="cb29-17"><a href="#cb29-17" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65   delta_a2   delta_b2</span></span>
+<span id="cb29-18"><a href="#cb29-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ============ ============ ============ ========== ==========</span></span>
+<span id="cb29-19"><a href="#cb29-19" tabindex="-1"></a><span class="co">#&gt;      3.4074     2.2857     4.8977     3.5510     3.4511       0.4480       3.9408       0.2034          .          .</span></span>
+<span id="cb29-20"><a href="#cb29-20" tabindex="-1"></a><span class="co">#&gt;                                                    </span></span>
+<span id="cb29-21"><a href="#cb29-21" tabindex="-1"></a><span class="co">#&gt;             ||--||  Transform                      </span></span>
+<span id="cb29-22"><a href="#cb29-22" tabindex="-1"></a><span class="co">#&gt;  ---------- ||--|| ---------- ---------- ----------</span></span>
+<span id="cb29-23"><a href="#cb29-23" tabindex="-1"></a><span class="co">#&gt;    delta_c2 ||--||         a2         b2         c2</span></span>
+<span id="cb29-24"><a href="#cb29-24" tabindex="-1"></a><span class="co">#&gt;  ========== ||--|| ========== ========== ==========</span></span>
+<span id="cb29-25"><a href="#cb29-25" tabindex="-1"></a><span class="co">#&gt;           . ||--||     1.2110     1.1679     1.2340</span></span></code></pre></div>
 <p>More details are provided in
 <code>vignette(&quot;Parameter-transformations&quot;, package = &quot;lessSEM&quot;)</code>.</p>
 </div>
@@ -848,13 +861,13 @@ features.</p>
 <p><strong>lessSEM</strong> supports exporting specific models to
 <strong>lavaan</strong>. This can be very useful when plotting the final
 model.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">lessSEM2Lavaan</span>(<span class="at">regularizedSEM =</span> rsem, </span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">lessSEM2Lavaan</span>(<span class="at">regularizedSEM =</span> rsem, </span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>                              <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span></code></pre></div>
 <p>The result can be plotted with, for instance, <a href="https://github.com/SachaEpskamp/semPlot"><strong>semPlot</strong></a>:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(semPlot)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">semPaths</span>(lavaanModel,</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">what =</span> <span class="st">&quot;est&quot;</span>,</span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">fade =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">library</span>(semPlot)</span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a><span class="fu">semPaths</span>(lavaanModel,</span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>         <span class="at">what =</span> <span class="st">&quot;est&quot;</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>         <span class="at">fade =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 </div>
 <div id="multi-group-models-and-definition-variables" class="section level2">
 <h2>Multi-Group Models and Definition Variables</h2>
@@ -879,31 +892,31 @@ introduction can be found in
 regression parameters of the Political Democracy data set with different
 penalties. The following script is adapted from
 <code>?lavaan::sem</code>.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3 + c2*y2 + c3*y3 + c4*y4</span></span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="st">     dem60 =~ y1 + y2 + y3 + y4</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="st">     dem65 =~ y5 + y6 + y7 + c*y8</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a><span class="st">  # regressions</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a><span class="st">    dem60 ~ r1*ind60</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a><span class="st">    dem65 ~ r2*ind60 + r3*dem60</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="st">&#39;</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">sem</span>(model,</span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> PoliticalDemocracy)</span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Let&#39;s add a lasso penalty on the cross-loadings c2 - c4 and </span></span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="co"># scad penalty on the regressions r1-r3</span></span>
-<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>mp <span class="ot">&lt;-</span> lavaanModel <span class="sc">|&gt;</span></span>
-<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mixedPenalty</span>() <span class="sc">|&gt;</span></span>
-<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;c2&quot;</span>, <span class="st">&quot;c3&quot;</span>, <span class="st">&quot;c4&quot;</span>), </span>
-<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;r1&quot;</span>, <span class="st">&quot;r2&quot;</span>, <span class="st">&quot;r3&quot;</span>), </span>
-<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="st">&#39; </span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="st">  # latent variable definitions</span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="st">     ind60 =~ x1 + x2 + x3 + c2*y2 + c3*y3 + c4*y4</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="st">     dem60 =~ y1 + y2 + y3 + y4</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="st">     dem65 =~ y5 + y6 + y7 + c*y8</span></span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="st">  # regressions</span></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="st">    dem60 ~ r1*ind60</span></span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="st">    dem65 ~ r2*ind60 + r3*dem60</span></span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="st">&#39;</span></span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a>lavaanModel <span class="ot">&lt;-</span> <span class="fu">sem</span>(model,</span>
+<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a>                   <span class="at">data =</span> PoliticalDemocracy)</span>
+<span id="cb32-14"><a href="#cb32-14" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="#cb32-15" tabindex="-1"></a><span class="co"># Let&#39;s add a lasso penalty on the cross-loadings c2 - c4 and </span></span>
+<span id="cb32-16"><a href="#cb32-16" tabindex="-1"></a><span class="co"># scad penalty on the regressions r1-r3</span></span>
+<span id="cb32-17"><a href="#cb32-17" tabindex="-1"></a>mp <span class="ot">&lt;-</span> lavaanModel <span class="sc">|&gt;</span></span>
+<span id="cb32-18"><a href="#cb32-18" tabindex="-1"></a>  <span class="fu">mixedPenalty</span>() <span class="sc">|&gt;</span></span>
+<span id="cb32-19"><a href="#cb32-19" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;c2&quot;</span>, <span class="st">&quot;c3&quot;</span>, <span class="st">&quot;c4&quot;</span>), </span>
+<span id="cb32-20"><a href="#cb32-20" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb32-21"><a href="#cb32-21" tabindex="-1"></a>  <span class="fu">addLasso</span>(<span class="at">regularized =</span> <span class="fu">c</span>(<span class="st">&quot;r1&quot;</span>, <span class="st">&quot;r2&quot;</span>, <span class="st">&quot;r3&quot;</span>), </span>
+<span id="cb32-22"><a href="#cb32-22" tabindex="-1"></a>           <span class="at">lambdas =</span> <span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">1</span>,.<span class="dv">2</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb32-23"><a href="#cb32-23" tabindex="-1"></a>  <span class="fu">fit</span>()</span></code></pre></div>
 <p>The best model according to the BIC can be extracted with:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(fitMp, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">coef</span>(fitMp, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="more-information" class="section level1">
@@ -917,184 +930,6 @@ the <strong>lessSEM</strong> optimizers in your own package, have a look
 at the vignettes <code>vignette(&#39;General-Purpose-Optimization&#39;)</code>
 and <code>vignette(&#39;The-optimizer-interface&#39;)</code> and at the <a href="https://github.com/jhorzek/lessLM"><strong>lessLM</strong></a>
 package.</p>
-</div>
-<div id="table-of-the-most-relevant-functions" class="section level1">
-<h1>Table of the most relevant functions</h1>
-<p>Fitting <em>regularized SEM</em>:</p>
-<table>
-<colgroup>
-<col width="50%" />
-<col width="50%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>function name</th>
-<th>what it does</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>ridge</td>
-<td>ridge regularization of SEM</td>
-</tr>
-<tr class="even">
-<td>cvRidge</td>
-<td>cross-validated ridge regularization of SEM</td>
-</tr>
-<tr class="odd">
-<td>lasso</td>
-<td>lasso regularization of SEM</td>
-</tr>
-<tr class="even">
-<td>cvLasso</td>
-<td>cross-validated lasso regularization of SEM</td>
-</tr>
-<tr class="odd">
-<td>adaptiveLasso</td>
-<td>adaptive lasso regularization of SEM</td>
-</tr>
-<tr class="even">
-<td>cvAdaptiveLasso</td>
-<td>cross-validated adaptive lasso regularization of SEM</td>
-</tr>
-<tr class="odd">
-<td>elasticNet</td>
-<td>elastic net regularization of SEM</td>
-</tr>
-<tr class="even">
-<td>cvElasticNet</td>
-<td>cross-validated elastic net regularization of SEM</td>
-</tr>
-<tr class="odd">
-<td>cappedL1</td>
-<td>cappedL1 regularization of SEM</td>
-</tr>
-<tr class="even">
-<td>cvCappedL1</td>
-<td>cross-validated cappedL1 regularization of SEM</td>
-</tr>
-<tr class="odd">
-<td>lsp</td>
-<td>lsp regularization of SEM</td>
-</tr>
-<tr class="even">
-<td>cvLsp</td>
-<td>cross-validated lsp regularization of SEM</td>
-</tr>
-<tr class="odd">
-<td>mcp</td>
-<td>mcp regularization of SEM</td>
-</tr>
-<tr class="even">
-<td>cvMcp</td>
-<td>cross-validated mcp regularization of SEM</td>
-</tr>
-<tr class="odd">
-<td>scad</td>
-<td>scad regularization of SEM</td>
-</tr>
-<tr class="even">
-<td>cvScad</td>
-<td>cross-validated scad regularization of SEM</td>
-</tr>
-</tbody>
-</table>
-<p>Using the optimizers in <strong>lessSEM</strong> for <em>general
-purpose optimization</em>:</p>
-<table>
-<colgroup>
-<col width="50%" />
-<col width="50%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>function name</th>
-<th>what it does</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>gpRidge</td>
-<td>ridge regularization for general purpose optimization</td>
-</tr>
-<tr class="even">
-<td>gpLasso</td>
-<td>lasso regularization for general purpose optimization</td>
-</tr>
-<tr class="odd">
-<td>gpAdaptiveLasso</td>
-<td>adaptive lasso regularization for general purpose optimization</td>
-</tr>
-<tr class="even">
-<td>gpElasticNet</td>
-<td>elastic net regularization for general purpose optimization</td>
-</tr>
-<tr class="odd">
-<td>gpCappedL1</td>
-<td>cappedL1 regularization for general purpose optimization</td>
-</tr>
-<tr class="even">
-<td>gpLsp</td>
-<td>lsp regularization for general purpose optimization</td>
-</tr>
-<tr class="odd">
-<td>gpMcp</td>
-<td>mcp regularization for general purpose optimization</td>
-</tr>
-<tr class="even">
-<td>gpScad</td>
-<td>scad regularization for general purpose optimization</td>
-</tr>
-</tbody>
-</table>
-<p>Using the optimizers in <strong>lessSEM</strong> for <em>general
-purpose optimization with C++ functions</em>:</p>
-<table>
-<colgroup>
-<col width="50%" />
-<col width="50%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>function name</th>
-<th>what it does</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>gpRidgeCpp</td>
-<td>ridge regularization for general purpose optimization</td>
-</tr>
-<tr class="even">
-<td>gpLassoCpp</td>
-<td>lasso regularization for general purpose optimization</td>
-</tr>
-<tr class="odd">
-<td>gpAdaptiveLassoCpp</td>
-<td>adaptive lasso regularization for general purpose optimization</td>
-</tr>
-<tr class="even">
-<td>gpElasticNetCpp</td>
-<td>elastic net regularization for general purpose optimization</td>
-</tr>
-<tr class="odd">
-<td>gpCappedL1Cpp</td>
-<td>cappedL1 regularization for general purpose optimization</td>
-</tr>
-<tr class="even">
-<td>gpLspCpp</td>
-<td>lsp regularization for general purpose optimization</td>
-</tr>
-<tr class="odd">
-<td>gpMcpCpp</td>
-<td>mcp regularization for general purpose optimization</td>
-</tr>
-<tr class="even">
-<td>gpScadCpp</td>
-<td>scad regularization for general purpose optimization</td>
-</tr>
-</tbody>
-</table>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
@@ -1192,8 +1027,8 @@ and Trends in Optimization, 1(3), 123–231.</li>
 </div>
 </div>
 </div>
-<div id="important-notes" class="section level1">
-<h1>Important Notes</h1>
+<div id="license-note" class="section level1">
+<h1>LICENSE NOTE</h1>
 <p>THE SOFTWARE IS PROVIDED ‘AS IS’, WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.

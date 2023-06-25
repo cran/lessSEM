@@ -12,14 +12,19 @@ setMethod("show", "Rcpp_SEMCpp", function (object) {
   cat("Parameters:\n")
   print(.getParameters(object))
   cat("\n")
-  cat(paste0("-2 log-Likelihood: ", object$m2LL))
+  cat(paste0("Objective value: ", object$objectiveValue))
 })
 
 #' logLik
 #' 
 #' @param object object of class Rcpp_SEMCpp
+#' @param ... not used
 #' @returns log-likelihood of the model
-setMethod("logLik", "Rcpp_SEMCpp", function (object) {
+setMethod("logLik", "Rcpp_SEMCpp", function (object, ...) {
+  
+  if(object$getEstimator() != "fiml")
+    stop("Likelihood can only be computed for fiml objective.")
+  
   if(!object$wasFit){
     object$fit()
   }
@@ -27,7 +32,7 @@ setMethod("logLik", "Rcpp_SEMCpp", function (object) {
   numberOfParameters <- length(.getParameters(object))
   
   ll <- new("logLikelihood",
-            logLik = -.5*object$m2LL,
+            logLik = -.5*object$objectiveValue,
             nParameters = numberOfParameters,
             N = N)
   return(ll)
@@ -45,21 +50,24 @@ setMethod("coef", "Rcpp_SEMCpp", function (object, ...) {
 #' AIC
 #' 
 #' @param object object of class Rcpp_SEMCpp
+#' @param ... not used
+#' @param k multiplier for number of parameters
 #' @returns AIC values
-setMethod("AIC", "Rcpp_SEMCpp", function (object) {
+setMethod("AIC", "Rcpp_SEMCpp", function (object, ..., k = 2) {
   if(!object$wasFit){
     object$fit()
   }
   ll <- logLik(object)
-  AICis <- -2*ll@logLik + 2*ll@nParameters
+  AICis <- -2*ll@logLik + k*ll@nParameters
   return(AICis)
 })
 
 #' BIC
 #' 
 #' @param object object of class Rcpp_SEMCpp
+#' @param ... not used
 #' @returns BIC values
-setMethod("BIC", "Rcpp_SEMCpp", function (object) {
+setMethod("BIC", "Rcpp_SEMCpp", function (object, ...) {
   if(!object$wasFit){
     object$fit()
   }
