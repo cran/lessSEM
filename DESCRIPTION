@@ -1,12 +1,12 @@
 Package: lessSEM
 Type: Package
 Title: Non-Smooth Regularization for Structural Equation Models
-Version: 1.5.2
+Version: 1.5.4
 Authors@R: c(person(given   = "Jannik H.", family = "Orzek",
                     role    = c("aut", "cre", "cph"),
-                    email   = "orzek@mpib-berlin.mpg.de",
+                    email   = "jannik.orzek@mailbox.org",
                     comment = c(ORCID = "0000-0002-3123-2248")))
-Maintainer: Jannik H. Orzek <orzek@mpib-berlin.mpg.de>
+Maintainer: Jannik H. Orzek <jannik.orzek@mailbox.org>
 Description: Provides regularized structural equation modeling 
   (regularized SEM) with non-smooth penalty functions (e.g., lasso) building 
   on 'lavaan'. The package is heavily inspired by the 
@@ -21,12 +21,12 @@ Imports: Rcpp (>= 1.0.8), RcppArmadillo, RcppParallel, ggplot2, tidyr,
 Suggests: knitr, plotly, rmarkdown, Rsolnp
 LinkingTo: Rcpp, RcppArmadillo, RcppParallel
 VignetteBuilder: knitr
-SystemRequirements: GNU make
+SystemRequirements: GNU make, C++14
 URL: https://github.com/jhorzek/lessSEM
 BugReports: https://github.com/jhorzek/lessSEM/issues
 NeedsCompilation: yes
-Packaged: 2023-06-25 16:18:25 UTC; janni
+Packaged: 2024-01-09 10:53:57 UTC; janni
 Author: Jannik H. Orzek [aut, cre, cph]
     (<https://orcid.org/0000-0002-3123-2248>)
 Repository: CRAN
-Date/Publication: 2023-06-25 17:10:02 UTC
+Date/Publication: 2024-01-09 15:00:05 UTC

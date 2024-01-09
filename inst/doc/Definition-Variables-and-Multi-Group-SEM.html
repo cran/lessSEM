@@ -505,48 +505,48 @@ is called <code>x1~1</code> in both models. Therefore,
 <strong>lessSEM</strong> assumed that we wanted these parameters to have
 exactly the same value in both models.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">coef</span>(fit)</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                   </span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                </span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ----------- ----------- -----------</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3          a          b          c dem60~ind60 dem65~ind60 dem65~dem60</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== =========== =========== ===========</span></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;   0.0000  0.0000 ||--||     1.8164     1.5582     1.1879     1.1706     1.2511      1.4062      0.4696      0.8755</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                              </span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                           </span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ----------- ----------- ----------- ----------</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3          a          b          c dem60~ind60 dem65~ind60 dem65~dem60     y1~~y5</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== =========== =========== =========== ==========</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;   0.0000  0.0000 ||--||     1.8164     1.5582     1.1879     1.1706     1.2511      1.4062      0.4696      0.8755     0.5389</span></span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;      y1~~y5     y2~~y4     y2~~y6     y3~~y7     y4~~y8     y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;      y2~~y4     y2~~y6     y3~~y7     y4~~y8     y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2     y3~~y3</span></span>
 <span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;      0.5389     1.4270     2.2120     0.7425     0.3718     1.3734     0.0000     1.3895     1.2086     1.8544     7.5981</span></span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ------------ ------------ ------------ ----------</span></span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;      y3~~y3     y4~~y4     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65       x1~1</span></span>
-<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ============ ============ ============ ==========</span></span>
-<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;      4.9592     3.2006     2.2664     4.9911     3.6046     3.3135       0.5305       3.8021       0.2003     5.0409</span></span>
-<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
-<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
-<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt;        x2~1       x3~1       y1~1       y2~1       y3~1       y4~1       y5~1       y6~1       y7~1       y8~1 visual=~x2</span></span>
-<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt;      5.8482     2.5445     5.4463     4.2330     6.5420     4.4295     5.1139     2.9502     6.1703     4.0150     0.2791</span></span>
-<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
-<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
-<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt;  ---------- ----------- ----------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt;  visual=~x3 textual=~x5 textual=~x6  speed=~x8  speed=~x9     x4~~x4     x5~~x5     x6~~x6     x7~~x7     x8~~x8     x9~~x9</span></span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt;  ========== =========== =========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt;      0.4461      1.1126      0.9221     1.1746     1.0056     0.3681     0.4434     0.3610     0.7750     0.4590     0.6025</span></span>
-<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
-<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
-<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt;  -------------- ---------------- ------------ --------------- ------------- -------------- ---------- ---------- ----------</span></span>
-<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt;  visual~~visual textual~~textual speed~~speed visual~~textual visual~~speed textual~~speed       x4~1       x5~1       x6~1</span></span>
-<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt;  ============== ================ ============ =============== ============= ============== ========== ========== ==========</span></span>
-<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co">#&gt;          1.3695           0.9839       0.4084          0.4666        0.2615         0.1746     3.0967     4.3804     2.2186</span></span>
-<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
-<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
-<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ----------</span></span>
-<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co">#&gt;        x7~1       x8~1       x9~1</span></span>
-<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ==========</span></span>
-<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a><span class="co">#&gt;      4.2060     5.5507     5.3943</span></span></code></pre></div>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt;      1.4270     2.2120     0.7425     0.3718     1.3734     0.0000     1.3895     1.2086     1.8544     7.5981     4.9592</span></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                                                </span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                                                </span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ------------ ------------ ------------ ---------- ---------- ----------</span></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65       x1~1       x2~1       x3~1</span></span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ============ ============ ============ ========== ========== ==========</span></span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a><span class="co">#&gt;      3.2006     2.2664     4.9911     3.6046     3.3135       0.5305       3.8021       0.2003     5.0409     5.8482     2.5445</span></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a><span class="co">#&gt;                                                                                                                           </span></span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt;                                                                                                                           </span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- -----------</span></span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt;        y1~1       y2~1       y3~1       y4~1       y5~1       y6~1       y7~1       y8~1 visual=~x2 visual=~x3 textual=~x5</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ===========</span></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt;      5.4463     4.2330     6.5420     4.4295     5.1139     2.9502     6.1703     4.0150     0.2791     0.4461      1.1126</span></span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt;                                                                                                                    </span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt;                                                                                                                    </span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt;  ----------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- --------------</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a><span class="co">#&gt;  textual=~x6  speed=~x8  speed=~x9     x4~~x4     x5~~x5     x6~~x6     x7~~x7     x8~~x8     x9~~x9 visual~~visual</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a><span class="co">#&gt;  =========== ========== ========== ========== ========== ========== ========== ========== ========== ==============</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt;       0.9221     1.1746     1.0056     0.3681     0.4434     0.3610     0.7750     0.4590     0.6025         1.3695</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt;                                                                                                                        </span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt;                                                                                                                        </span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt;  ---------------- ------------ --------------- ------------- -------------- ---------- ---------- ---------- ----------</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt;  textual~~textual speed~~speed visual~~textual visual~~speed textual~~speed       x4~1       x5~1       x6~1       x7~1</span></span>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt;  ================ ============ =============== ============= ============== ========== ========== ========== ==========</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co">#&gt;            0.9839       0.4084          0.4666        0.2615         0.1746     3.0967     4.3804     2.2186     4.2060</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co">#&gt;                       </span></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="co">#&gt;                       </span></span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co">#&gt;  ---------- ----------</span></span>
+<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co">#&gt;        x8~1       x9~1</span></span>
+<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="co">#&gt;  ========== ==========</span></span>
+<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a><span class="co">#&gt;      5.5507     5.3943</span></span></code></pre></div>
 </div>
 </div>
 <div id="regularized-multi-group-models" class="section level2">

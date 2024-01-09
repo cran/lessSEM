@@ -516,18 +516,18 @@ estimates:</p>
 <span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt;      1.0830     0.5685     0.9626     1.5255</span></span></code></pre></div>
 <p>If you are only interested in the estimates, use</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">estimates</span>(fitLasso)</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt;             l2        l3        l4          l5         l6           l7    y1~~y1   y2~~y2   y3~~y3   y4~~y4    y5~~y5</span></span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; [1,] 0.7522904 0.7536140 0.5742228  0.00000000 0.00000000  0.000000000 0.8812416 1.147737 1.927350 1.080353 0.5710041</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; [2,] 0.7476862 0.7480112 0.5720039 -0.01042497 0.00000000  0.000000000 0.8741617 1.152318 1.933141 1.081837 0.5704936</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; [3,] 0.7398991 0.7395932 0.5688300 -0.02660810 0.00000000 -0.008974807 0.8630783 1.160213 1.941722 1.083766 0.5696926</span></span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; [4,] 0.7301019 0.7331646 0.5677000 -0.04181445 0.00000000 -0.047849804 0.8528254 1.170580 1.948163 1.084065 0.5689390</span></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; [5,] 0.7239003 0.7318701 0.5688230 -0.05624391 0.01658325 -0.089365627 0.8491201 1.177878 1.949609 1.082966 0.5684702</span></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;         y6~~y6   y7~~y7</span></span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; [1,] 0.9628056 1.531997</span></span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; [2,] 0.9628058 1.532015</span></span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; [3,] 0.9628057 1.531243</span></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; [4,] 0.9628055 1.528245</span></span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; [5,] 0.9625805 1.525473</span></span></code></pre></div>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt;             l2        l3        l4          l5         l6           l7    y1~~y1   y2~~y2   y3~~y3   y4~~y4    y5~~y5    y6~~y6</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt; [1,] 0.7522904 0.7536140 0.5742228  0.00000000 0.00000000  0.000000000 0.8812416 1.147737 1.927350 1.080353 0.5710041 0.9628056</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; [2,] 0.7476862 0.7480112 0.5720039 -0.01042497 0.00000000  0.000000000 0.8741617 1.152318 1.933141 1.081837 0.5704936 0.9628058</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt; [3,] 0.7398991 0.7395932 0.5688300 -0.02660810 0.00000000 -0.008974807 0.8630783 1.160213 1.941722 1.083766 0.5696926 0.9628057</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; [4,] 0.7301019 0.7331646 0.5677000 -0.04181445 0.00000000 -0.047849804 0.8528254 1.170580 1.948163 1.084065 0.5689390 0.9628055</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; [5,] 0.7239003 0.7318701 0.5688230 -0.05624391 0.01658325 -0.089365627 0.8491201 1.177878 1.949609 1.082966 0.5684702 0.9625805</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;        y7~~y7</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; [1,] 1.531997</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; [2,] 1.532015</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; [3,] 1.531243</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; [4,] 1.528245</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; [5,] 1.525473</span></span></code></pre></div>
 <p>Now, let’s assume you also want to try out the scad penalty. In this
 case, all you have to do is to replace the <code>lasso()</code> function
 with the <code>scad()</code> function:</p>
@@ -824,30 +824,30 @@ the penalty function:</p>
 <p>To check if measurement invariance can be assumed, we can select the
 best model using information criteria:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">coef</span>(lassoFit, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                   </span></span>
-<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                </span></span>
-<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ----------- ----------- -----------</span></span>
-<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3         a1         b1         c1 dem60~ind60 dem65~ind60 dem65~dem60</span></span>
-<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== =========== =========== ===========</span></span>
-<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a><span class="co">#&gt;   0.2216  1.0000 ||--||     2.1825     1.8189     1.2110     1.1679     1.2340      1.4534      0.5935      0.8659</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                              </span></span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                           </span></span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ----------- ----------- ----------- ----------</span></span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3         a1         b1         c1 dem60~ind60 dem65~ind60 dem65~dem60     y1~~y5</span></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== =========== =========== =========== ==========</span></span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a><span class="co">#&gt;   0.2216  1.0000 ||--||     2.1825     1.8189     1.2110     1.1679     1.2340      1.4534      0.5935      0.8659     0.5552</span></span>
 <span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a><span class="co">#&gt;      y1~~y5     y2~~y4     y3~~y7     y4~~y8     y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2     y3~~y3</span></span>
+<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a><span class="co">#&gt;      y2~~y4     y3~~y7     y4~~y8     y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2     y3~~y3     y4~~y4</span></span>
 <span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a><span class="co">#&gt;      0.5552     1.5947     0.7807     0.6537     1.5350     0.0820     0.1177     0.4675     1.7929     7.3843     5.0175</span></span>
-<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
-<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
-<span id="cb29-16"><a href="#cb29-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ------------ ------------ ------------ ---------- ----------</span></span>
-<span id="cb29-17"><a href="#cb29-17" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65   delta_a2   delta_b2</span></span>
-<span id="cb29-18"><a href="#cb29-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ============ ============ ============ ========== ==========</span></span>
-<span id="cb29-19"><a href="#cb29-19" tabindex="-1"></a><span class="co">#&gt;      3.4074     2.2857     4.8977     3.5510     3.4511       0.4480       3.9408       0.2034          .          .</span></span>
-<span id="cb29-20"><a href="#cb29-20" tabindex="-1"></a><span class="co">#&gt;                                                    </span></span>
-<span id="cb29-21"><a href="#cb29-21" tabindex="-1"></a><span class="co">#&gt;             ||--||  Transform                      </span></span>
-<span id="cb29-22"><a href="#cb29-22" tabindex="-1"></a><span class="co">#&gt;  ---------- ||--|| ---------- ---------- ----------</span></span>
-<span id="cb29-23"><a href="#cb29-23" tabindex="-1"></a><span class="co">#&gt;    delta_c2 ||--||         a2         b2         c2</span></span>
-<span id="cb29-24"><a href="#cb29-24" tabindex="-1"></a><span class="co">#&gt;  ========== ||--|| ========== ========== ==========</span></span>
-<span id="cb29-25"><a href="#cb29-25" tabindex="-1"></a><span class="co">#&gt;           . ||--||     1.2110     1.1679     1.2340</span></span></code></pre></div>
+<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a><span class="co">#&gt;      1.5947     0.7807     0.6537     1.5350     0.0820     0.1177     0.4675     1.7929     7.3843     5.0175     3.4074</span></span>
+<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
+<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                                      ||--||</span></span>
+<span id="cb29-16"><a href="#cb29-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ------------ ------------ ------------ ---------- ---------- ---------- ||--||</span></span>
+<span id="cb29-17"><a href="#cb29-17" tabindex="-1"></a><span class="co">#&gt;      y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65   delta_a2   delta_b2   delta_c2 ||--||</span></span>
+<span id="cb29-18"><a href="#cb29-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ============ ============ ============ ========== ========== ========== ||--||</span></span>
+<span id="cb29-19"><a href="#cb29-19" tabindex="-1"></a><span class="co">#&gt;      2.2857     4.8977     3.5510     3.4511       0.4480       3.9408       0.2034          .          .          . ||--||</span></span>
+<span id="cb29-20"><a href="#cb29-20" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
+<span id="cb29-21"><a href="#cb29-21" tabindex="-1"></a><span class="co">#&gt;   Transform                      </span></span>
+<span id="cb29-22"><a href="#cb29-22" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ----------</span></span>
+<span id="cb29-23"><a href="#cb29-23" tabindex="-1"></a><span class="co">#&gt;          a2         b2         c2</span></span>
+<span id="cb29-24"><a href="#cb29-24" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ==========</span></span>
+<span id="cb29-25"><a href="#cb29-25" tabindex="-1"></a><span class="co">#&gt;      1.2110     1.1679     1.2340</span></span></code></pre></div>
 <p>More details are provided in
 <code>vignette(&quot;Parameter-transformations&quot;, package = &quot;lessSEM&quot;)</code>.</p>
 </div>

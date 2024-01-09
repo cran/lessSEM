@@ -597,28 +597,28 @@ the raw parameters instead would look as follows:</p>
 <code>lessSEM:::.getGradients</code> function. Gradients can be computed
 for the transformed parameters</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>lessSEM<span class="sc">:::</span><span class="fu">.getGradients</span>(mySEM, <span class="at">raw =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">#&gt;     ind60=~x2     ind60=~x3             a             b             c   dem60~ind60   dem65~ind60   dem65~dem60 </span></span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt;   0.361097622   0.105564095 -32.837359814   2.453232158  17.076222049  -0.450648533  -1.078272542  -5.357920036 </span></span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt;        y1~~y5        y2~~y4        y2~~y6        y3~~y7        y4~~y8        y6~~y8        x1~~x1        x2~~x2 </span></span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt;   0.004650747  -0.157923486  -0.567076177   0.161163293   0.266869495  -0.271533827   0.230054158   0.306685898 </span></span>
-<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt;        x3~~x3        y1~~y1        y2~~y2        y3~~y3        y4~~y4        y5~~y5        y6~~y6        y7~~y7 </span></span>
-<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt;  -0.093753843  -0.015516535  -0.343353554   0.099359383   0.137753880   0.131454473  -0.330083693   0.073331567 </span></span>
-<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt;        y8~~y8  ind60~~ind60  dem60~~dem60  dem65~~dem65          x1~1          x2~1          x3~1          y1~1 </span></span>
-<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt;   0.148964628  -0.103960291  -0.252921392  -1.955349241   0.000000000   0.000000000   0.000000000   0.000000000 </span></span>
-<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt;          y2~1          y3~1          y4~1          y5~1          y6~1          y7~1          y8~1 </span></span>
-<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt;   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000</span></span></code></pre></div>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">#&gt;     ind60=~x2     ind60=~x3             a             b             c   dem60~ind60   dem65~ind60   dem65~dem60        y1~~y5 </span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="co">#&gt;   0.361097622   0.105564095 -32.837359814   2.453232158  17.076222049  -0.450648533  -1.078272542  -5.357920036   0.004650747 </span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt;        y2~~y4        y2~~y6        y3~~y7        y4~~y8        y6~~y8        x1~~x1        x2~~x2        x3~~x3        y1~~y1 </span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="co">#&gt;  -0.157923486  -0.567076177   0.161163293   0.266869495  -0.271533827   0.230054158   0.306685898  -0.093753843  -0.015516535 </span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt;        y2~~y2        y3~~y3        y4~~y4        y5~~y5        y6~~y6        y7~~y7        y8~~y8  ind60~~ind60  dem60~~dem60 </span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt;  -0.343353554   0.099359383   0.137753880   0.131454473  -0.330083693   0.073331567   0.148964628  -0.103960291  -0.252921392 </span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt;  dem65~~dem65          x1~1          x2~1          x3~1          y1~1          y2~1          y3~1          y4~1          y5~1 </span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt;  -1.955349241   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000 </span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt;          y6~1          y7~1          y8~1 </span></span>
+<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a><span class="co">#&gt;   0.000000000   0.000000000   0.000000000</span></span></code></pre></div>
 <p>or for the raw parameters</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>lessSEM<span class="sc">:::</span><span class="fu">.getGradients</span>(mySEM, <span class="at">raw =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt;     ind60=~x2     ind60=~x3             a             b             c   dem60~ind60   dem65~ind60   dem65~dem60 </span></span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt;   0.361097622   0.105564095 -32.837359814   2.453232158  17.076222049  -0.450648533  -1.078272542  -5.357920036 </span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt;        y1~~y5        y2~~y4        y2~~y6        y3~~y7        y4~~y8        y6~~y8        x1~~x1        x2~~x2 </span></span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt;   0.004650747  -0.157923486  -0.567076177   0.161163293   0.266869495  -0.271533827   0.018723602   0.036933297 </span></span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt;        x3~~x3        y1~~y1        y2~~y2        y3~~y3        y4~~y4        y5~~y5        y6~~y6        y7~~y7 </span></span>
-<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt;  -0.043751134  -0.028777612  -2.603098086   0.492392971   0.444194569   0.304059508  -1.639902248   0.261063066 </span></span>
-<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt;        y8~~y8  ind60~~ind60  dem60~~dem60  dem65~~dem65          x1~1          x2~1          x3~1          y1~1 </span></span>
-<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt;   0.492728130  -0.046636468  -0.980147244  -0.321583201   0.000000000   0.000000000   0.000000000   0.000000000 </span></span>
-<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt;          y2~1          y3~1          y4~1          y5~1          y6~1          y7~1          y8~1 </span></span>
-<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co">#&gt;   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000</span></span></code></pre></div>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt;     ind60=~x2     ind60=~x3             a             b             c   dem60~ind60   dem65~ind60   dem65~dem60        y1~~y5 </span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt;   0.361097622   0.105564095 -32.837359814   2.453232158  17.076222049  -0.450648533  -1.078272542  -5.357920036   0.004650747 </span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt;        y2~~y4        y2~~y6        y3~~y7        y4~~y8        y6~~y8        x1~~x1        x2~~x2        x3~~x3        y1~~y1 </span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt;  -0.157923486  -0.567076177   0.161163293   0.266869495  -0.271533827   0.018723602   0.036933297  -0.043751134  -0.028777612 </span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt;        y2~~y2        y3~~y3        y4~~y4        y5~~y5        y6~~y6        y7~~y7        y8~~y8  ind60~~ind60  dem60~~dem60 </span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt;  -2.603098086   0.492392971   0.444194569   0.304059508  -1.639902248   0.261063066   0.492728130  -0.046636468  -0.980147244 </span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt;  dem65~~dem65          x1~1          x2~1          x3~1          y1~1          y2~1          y3~1          y4~1          y5~1 </span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt;  -0.321583201   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000   0.000000000 </span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt;          y6~1          y7~1          y8~1 </span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co">#&gt;   0.000000000   0.000000000   0.000000000</span></span></code></pre></div>
 </div>
 <div id="computing-the-hessian" class="section level2">
 <h2>Computing the Hessian</h2>
@@ -729,11 +729,11 @@ step:</p>
 <p>Finally, we can compute the standard errors:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>lessSEM<span class="sc">:::</span><span class="fu">.standardErrors</span>(<span class="at">SEM =</span> mySEM, <span class="at">raw =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="co">#&gt;    ind60=~x2    ind60=~x3            a            b            c  dem60~ind60  dem65~ind60  dem65~dem60       y1~~y5 </span></span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="co">#&gt;   0.13885220   0.15204331   0.14166120   0.11987057   0.12295636   0.39139697   0.23828913   0.07567860   0.36462027 </span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="co">#&gt;   0.13885220   0.15204330   0.14166120   0.11987057   0.12295637   0.39139697   0.23828914   0.07567860   0.36462027 </span></span>
 <span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="co">#&gt;       y2~~y4       y2~~y6       y3~~y7       y4~~y8       y6~~y8       x1~~x1       x2~~x2       x3~~x3       y1~~y1 </span></span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="co">#&gt;   0.68977246   0.73096921   0.62119518   0.46062833   0.57969391   0.01968652   0.06991196   0.08897395   0.45717112 </span></span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="co">#&gt;   0.68977247   0.73096919   0.62119517   0.46062832   0.57969390   0.01968652   0.06991196   0.08897395   0.45717112 </span></span>
 <span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="co">#&gt;       y2~~y2       y3~~y3       y4~~y4       y5~~y5       y6~~y6       y7~~y7       y8~~y8 ind60~~ind60 dem60~~dem60 </span></span>
-<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="co">#&gt;   1.34332165   0.96373268   0.74092220   0.48364101   0.89600782   0.73922563   0.71425329   0.08675480   0.88802928 </span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="co">#&gt;   1.34332170   0.96373267   0.74092220   0.48364101   0.89600779   0.73922562   0.71425331   0.08675480   0.88802932 </span></span>
 <span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="co">#&gt; dem65~~dem65         x1~1         x2~1         x3~1         y1~1         y2~1         y3~1         y4~1         y5~1 </span></span>
 <span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="co">#&gt;   0.23331748   0.08406657   0.17326967   0.16121433   0.29892606   0.43891242   0.39404806   0.37957637   0.30446534 </span></span>
 <span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="co">#&gt;         y6~1         y7~1         y8~1 </span></span>

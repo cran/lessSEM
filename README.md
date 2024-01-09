@@ -3,6 +3,12 @@
 
 # lessSEM <img src="man/figures/lessSEM.svg" align="right" height="139" />
 
+<!-- badges: start -->
+
+[![Total
+Downloads](https://cranlogs.r-pkg.org/badges/grand-total/lessSEM)](https://cranlogs.r-pkg.org/badges/grand-total/lessSEM)
+<!-- badges: end -->
+
 **lessSEM** (**l**essSEM **es**timates **s**parse **SEM**) is an R
 package for regularized structural equation modeling (regularized SEM)
 with non-smooth penalty functions (e.g., lasso) building on
@@ -73,14 +79,19 @@ in R:
 install.packages("lessSEM")
 ```
 
-The newest version of the package can be installed from GitHub using the
-following commands in R:
+The newest version of the package can be installed from GitHub. However,
+because the project uses submodules, `devtools::install_github` does not
+download the entire R package. To download the development version, the
+following command needs to be run in git:
 
-``` r
-if(!require(devtools)) install.packages("devtools")
-devtools::install_github("jhorzek/lessSEM", 
-                         ref = "development")
-```
+    git clone --branch development --recurse-submodules https://github.com/jhorzek/lessSEM.git
+
+Navigate to the folder to which git copied the project and install the
+package with the lessSEM.Rproj file.
+
+If you want to download the main branch, use
+
+    git clone --recurse-submodules https://github.com/jhorzek/lessSEM.git
 
 > **Note** The lessSEM project has multiple branches. The **main**
 > branch will match the version currently available from CRAN. The
@@ -88,9 +99,10 @@ devtools::install_github("jhorzek/lessSEM",
 > CRAN. This branch will have passed all current tests of our test
 > suite, but may not be ready for CRAN yet (e.g., because not all
 > objectives of the road map have been met). **gh-pages** is used to
-> create the [documentation website](https://jhorzek.github.io/lessSEM/).
-> Finally, all other branches are used for ongoing development and
-> should be considered unstable.
+> create the [documentation
+> website](https://jhorzek.github.io/lessSEM/). Finally, all other
+> branches are used for ongoing development and should be considered
+> unstable.
 
 # Introduction
 
@@ -189,6 +201,25 @@ lsemIsta <- lasso(
 
 # Note: The results are basically identical:
 lsemIsta@parameters - lsem@parameters
+```
+
+If you want to regularize all loadings, regressions, variances, or
+covariances, you can also use one of the helper functions to extract the
+respective parameter labels from **lavaan** and then pass these to
+**lessSEM**:
+
+``` r
+loadings(lavaanModel)
+#>  [1] "l1"  "l2"  "l3"  "l4"  "l5"  "l6"  "l7"  "l8"  "l9"  "l10" "l11" "l12"
+#> [13] "l13" "l14" "l15"
+regressions(lavaanModel)
+#> character(0)
+variances(lavaanModel)
+#>  [1] "y1~~y1"   "y2~~y2"   "y3~~y3"   "y4~~y4"   "y5~~y5"   "y6~~y6"  
+#>  [7] "y7~~y7"   "y8~~y8"   "y9~~y9"   "y10~~y10" "y11~~y11" "y12~~y12"
+#> [13] "y13~~y13" "y14~~y14" "y15~~y15"
+covariances(lavaanModel)
+#> character(0)
 ```
 
 # Transformations

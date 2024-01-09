@@ -495,14 +495,14 @@ the penalty function:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">coef</span>(lassoFit)<span class="sc">@</span>estimates[<span class="fu">seq</span>(<span class="dv">1</span>,<span class="dv">100</span>,<span class="dv">10</span>),<span class="fu">c</span>(<span class="st">&quot;a1&quot;</span>, <span class="st">&quot;b1&quot;</span>, <span class="st">&quot;c1&quot;</span>, <span class="st">&quot;delta_a2&quot;</span>, <span class="st">&quot;delta_b2&quot;</span>, <span class="st">&quot;delta_c2&quot;</span>)]</span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;             a1       b1       c1     delta_a2    delta_b2 delta_c2</span></span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;  [1,] 1.210993 1.167936 1.234011  0.000000000 0.000000000        0</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt;  [2,] 1.211114 1.166390 1.234046  0.000000000 0.002702787        0</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt;  [2,] 1.211114 1.166390 1.234046  0.000000000 0.002702789        0</span></span>
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;  [3,] 1.212584 1.150753 1.234650  0.000000000 0.030080792        0</span></span>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt;  [4,] 1.214347 1.135698 1.235563  0.000000000 0.057049529        0</span></span>
 <span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt;  [5,] 1.216419 1.121154 1.236776  0.000000000 0.083716111        0</span></span>
 <span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;  [6,] 1.218762 1.107040 1.238259  0.000000000 0.110187427        0</span></span>
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;  [7,] 1.221414 1.093407 1.240046  0.000000000 0.136498978        0</span></span>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a><span class="co">#&gt;  [8,] 1.226629 1.080063 1.242051 -0.003960392 0.162516933        0</span></span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;  [9,] 1.246435 1.067714 1.244329 -0.032144145 0.186302859        0</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt;  [9,] 1.246435 1.067714 1.244329 -0.032144145 0.186302860        0</span></span>
 <span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; [10,] 1.266524 1.055803 1.247136 -0.060258715 0.210141745        0</span></span></code></pre></div>
 <p>Note that the differences between the parameters get smaller with
 larger <span class="math inline">\(\lambda\)</span> values. We can also
@@ -515,30 +515,30 @@ plot the differences:</p>
 <p>To check if measurement invariance can be assumed, we can select the
 best model using information criteria:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">coef</span>(lassoFit, <span class="at">criterion =</span> <span class="st">&quot;BIC&quot;</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                   </span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                </span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ----------- ----------- -----------</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3         a1         b1         c1 dem60~ind60 dem65~ind60 dem65~dem60</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== =========== =========== ===========</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;   0.2216  1.0000 ||--||     2.1825     1.8189     1.2110     1.1679     1.2340      1.4534      0.5935      0.8659</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt;                                                                                                                              </span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt;   Tuning         ||--||  Estimates                                                                                           </span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ----------- ----------- ----------- ----------</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||  ind60=~x2  ind60=~x3         a1         b1         c1 dem60~ind60 dem65~ind60 dem65~dem60     y1~~y5</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== =========== =========== =========== ==========</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;   0.2216  1.0000 ||--||     2.1825     1.8189     1.2110     1.1679     1.2340      1.4534      0.5935      0.8659     0.5552</span></span>
 <span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;      y1~~y5     y2~~y4     y3~~y7     y4~~y8     y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2     y3~~y3</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;      y2~~y4     y3~~y7     y4~~y8     y6~~y8     x1~~x1     x2~~x2     x3~~x3     y1~~y1     y2~~y2     y3~~y3     y4~~y4</span></span>
 <span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt;      0.5552     1.5947     0.7807     0.6537     1.5350     0.0820     0.1177     0.4675     1.7929     7.3843     5.0175</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                                     </span></span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ------------ ------------ ------------ ---------- ----------</span></span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt;      y4~~y4     y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65   delta_a2   delta_b2</span></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ============ ============ ============ ========== ==========</span></span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt;      3.4074     2.2857     4.8977     3.5510     3.4511       0.4480       3.9408       0.2034          .          .</span></span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt;                                                    </span></span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt;             ||--||  Transform                      </span></span>
-<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt;  ---------- ||--|| ---------- ---------- ----------</span></span>
-<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt;    delta_c2 ||--||         a2         b2         c2</span></span>
-<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt;  ========== ||--|| ========== ========== ==========</span></span>
-<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt;           . ||--||     1.2110     1.1679     1.2340</span></span></code></pre></div>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt;      1.5947     0.7807     0.6537     1.5350     0.0820     0.1177     0.4675     1.7929     7.3843     5.0175     3.4074</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                                            </span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                                      ||--||</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ------------ ------------ ------------ ---------- ---------- ---------- ||--||</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt;      y5~~y5     y6~~y6     y7~~y7     y8~~y8 ind60~~ind60 dem60~~dem60 dem65~~dem65   delta_a2   delta_b2   delta_c2 ||--||</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ============ ============ ============ ========== ========== ========== ||--||</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt;      2.2857     4.8977     3.5510     3.4511       0.4480       3.9408       0.2034          .          .          . ||--||</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt;                                  </span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt;   Transform                      </span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ----------</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt;          a2         b2         c2</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ==========</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt;      1.2110     1.1679     1.2340</span></span></code></pre></div>
 <p>Note that all differences have been zeroed – that is, a model with
 full measurement invariance did fit best.</p>
 <p>We can also access the transformed parameters:</p>
@@ -638,9 +638,8 @@ stationarity.</p>
 autoregressive effect is treated differently from the rest: After all,
 why should <span class="math inline">\(a_1\)</span> serve as baseline
 and not <span class="math inline">\(a_2\)</span> or <span class="math inline">\(a_5\)</span>? We will take a slightly different
-approach, again building on the idea of Fisher et al. (2022). A similar
-approach has also been proposed by Bai et al. (2020). Let’s define the
-autoregressive effect as</p>
+approach that is basically identical to the fused lasso proposed by
+Tibshirani et al. (2005). Let’s define the autoregressive effect as</p>
 <p><span class="math display">\[a_t = a_{t-1} + \Delta a_t\]</span></p>
 <p>Note that <span class="math inline">\(\Delta a_t\)</span> is no
 longer the difference with respect to the initial autoregressive effect
@@ -664,20 +663,20 @@ in GitHub</a>). We simulated a data set with 200 individuals measured at
 <span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; [4,]  1.6376973  1.30880439  1.35159277  0.4681794  1.5370870  0.6961462  0.1872212 -1.57377418  1.1081811 -0.50832183</span></span>
 <span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#&gt; [5,]  0.4995286 -0.23722728  0.61244148  0.3469646  0.3052115  0.2639443  1.3768225  0.02394048  1.1573912  1.30350064</span></span>
 <span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; [6,] -0.9766373  0.94700260 -0.59421930 -0.3197840  0.8221090 -0.6808501 -0.3434095 -0.90348981 -1.1760506 -1.72146444</span></span>
-<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt;           y2_t4      y3_t4      y1_t5      y2_t5      y3_t5      y1_t6      y2_t6       y3_t6      y1_t7      y2_t7</span></span>
-<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; [1,]  1.6842420  0.5604284 -1.6171372 -1.5100658 -2.1212448 -0.9014921 -0.9732405 -0.89209997 -1.4697023 -0.9088437</span></span>
-<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt; [2,] -1.5803092  0.1672394  0.1045129  0.3483139 -0.3669688 -0.6347357 -1.1095700  0.01821975  0.3845160  1.0140172</span></span>
-<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; [3,]  1.3579232 -0.1379793 -1.1968405 -0.3623344 -0.8732056 -0.8290071 -0.3555817 -0.98268524 -1.8270782 -0.2335533</span></span>
-<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; [4,]  1.1968847 -1.6473363  0.4423361 -1.0372594 -0.8153181 -1.6003121 -2.1169045 -0.46541710  1.3226249  1.7154104</span></span>
-<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; [5,]  0.3049751 -0.0146624  1.3351806  0.1229075  0.8274846  0.4508487  0.1328104  0.65883759 -0.3915346 -0.5549143</span></span>
-<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; [6,] -1.2828716 -0.4379788  1.0261730  0.1686185  0.6083559 -0.7427341  0.4514472 -1.15435404  1.7453347  1.2488910</span></span>
-<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt;           y3_t7      y1_t8       y2_t8      y3_t8       y1_t9      y2_t9      y3_t9      y1_t10      y2_t10     y3_t10</span></span>
-<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; [1,] -2.1031570  0.9915954  0.26021125  1.2988304  1.27416201  1.2010039  1.1426722  0.04668192 -0.24123204 -0.4421784</span></span>
-<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt; [2,]  1.8585956 -1.1280623  0.62646559 -0.8323908 -0.41574193 -0.6890046 -1.4714503 -0.01788118  0.02058262  0.3191417</span></span>
-<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; [3,] -1.6441484 -0.2693417  0.09757043  0.5752644  0.37098052 -0.3486185 -0.4273464 -0.87844796 -1.36443913 -1.0240934</span></span>
-<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt; [4,]  1.8113749  0.3459617  0.29614603  0.2463911  0.55566216  1.2444869  0.1788493  0.81351163 -0.39685221  3.3330365</span></span>
-<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt; [5,] -0.2476716 -1.3659303  1.14721685 -0.1968243 -1.58477183 -1.8546910  0.7432728  0.89776939  1.05624257  0.3635211</span></span>
-<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="co">#&gt; [6,]  0.6649188 -0.6131110 -0.27533871  0.1895920  0.02486185 -0.5151950 -0.2018260  1.13097234  0.74034559  2.5292256</span></span></code></pre></div>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt;           y2_t4      y3_t4      y1_t5      y2_t5      y3_t5      y1_t6      y2_t6       y3_t6      y1_t7      y2_t7      y3_t7</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; [1,]  1.6842420  0.5604284 -1.6171372 -1.5100658 -2.1212448 -0.9014921 -0.9732405 -0.89209997 -1.4697023 -0.9088437 -2.1031570</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt; [2,] -1.5803092  0.1672394  0.1045129  0.3483139 -0.3669688 -0.6347357 -1.1095700  0.01821975  0.3845160  1.0140172  1.8585956</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; [3,]  1.3579232 -0.1379793 -1.1968405 -0.3623344 -0.8732056 -0.8290071 -0.3555817 -0.98268524 -1.8270782 -0.2335533 -1.6441484</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; [4,]  1.1968847 -1.6473363  0.4423361 -1.0372594 -0.8153181 -1.6003121 -2.1169045 -0.46541710  1.3226249  1.7154104  1.8113749</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; [5,]  0.3049751 -0.0146624  1.3351806  0.1229075  0.8274846  0.4508487  0.1328104  0.65883759 -0.3915346 -0.5549143 -0.2476716</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; [6,] -1.2828716 -0.4379788  1.0261730  0.1686185  0.6083559 -0.7427341  0.4514472 -1.15435404  1.7453347  1.2488910  0.6649188</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt;           y1_t8       y2_t8      y3_t8       y1_t9      y2_t9      y3_t9      y1_t10      y2_t10     y3_t10</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; [1,]  0.9915954  0.26021125  1.2988304  1.27416201  1.2010039  1.1426722  0.04668192 -0.24123204 -0.4421784</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt; [2,] -1.1280623  0.62646559 -0.8323908 -0.41574193 -0.6890046 -1.4714503 -0.01788118  0.02058262  0.3191417</span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; [3,] -0.2693417  0.09757043  0.5752644  0.37098052 -0.3486185 -0.4273464 -0.87844796 -1.36443913 -1.0240934</span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt; [4,]  0.3459617  0.29614603  0.2463911  0.55566216  1.2444869  0.1788493  0.81351163 -0.39685221  3.3330365</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt; [5,] -1.3659303  1.14721685 -0.1968243 -1.58477183 -1.8546910  0.7432728  0.89776939  1.05624257  0.3635211</span></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="co">#&gt; [6,] -0.6131110 -0.27533871  0.1895920  0.02486185 -0.5151950 -0.2018260  1.13097234  0.74034559  2.5292256</span></span></code></pre></div>
 <p>The lavaan model is defined as follows:</p>
 <pre><code>#&gt; eta2 ~ a1*eta1
 #&gt; eta3 ~ a2*eta2
@@ -797,25 +796,25 @@ each effect (a1-a9) is estimated separately.</p>
 <span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt;  ------- ------- ||--|| ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
 <span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co">#&gt;   lambda   alpha ||--||         a1 eta1~~eta1          v         l2         l3      mvar1      mvar2      mvar3    y1_t1~1</span></span>
 <span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co">#&gt;  ======= ======= ||--|| ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#&gt;   0.2790  1.0000 ||--||     0.4665     1.1055     0.8051     0.5696     0.6754     0.0533     0.7428     0.6500    -0.1546</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#&gt;   0.2790  1.0000 ||--||     0.4665     1.1055     0.8051     0.5696     0.6754     0.0533     0.7428     0.6500    -0.1545</span></span>
 <span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
 <span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#&gt;     y2_t1~1    y3_t1~1    y1_t2~1    y2_t2~1    y3_t2~1    y1_t3~1    y2_t3~1    y3_t3~1    y1_t4~1    y2_t4~1    y3_t4~1</span></span>
 <span id="cb17-12"><a href="#cb17-12" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#&gt;     -0.0878    -0.1746    -0.1565    -0.0492    -0.0849    -0.1499    -0.0302    -0.1572    -0.0952    -0.0224    -0.0798</span></span>
+<span id="cb17-13"><a href="#cb17-13" tabindex="-1"></a><span class="co">#&gt;     -0.0878    -0.1745    -0.1565    -0.0492    -0.0849    -0.1499    -0.0302    -0.1572    -0.0952    -0.0224    -0.0798</span></span>
 <span id="cb17-14"><a href="#cb17-14" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb17-15"><a href="#cb17-15" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb17-16"><a href="#cb17-16" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
 <span id="cb17-17"><a href="#cb17-17" tabindex="-1"></a><span class="co">#&gt;     y1_t5~1    y2_t5~1    y3_t5~1    y1_t6~1    y2_t6~1    y3_t6~1    y1_t7~1    y2_t7~1    y3_t7~1    y1_t8~1    y2_t8~1</span></span>
 <span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a><span class="co">#&gt;      0.0373    -0.0231     0.0576     0.0502     0.0650    -0.0020    -0.0465     0.0678    -0.0383    -0.0221    -0.0279</span></span>
+<span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a><span class="co">#&gt;      0.0374    -0.0231     0.0576     0.0502     0.0651    -0.0020    -0.0466     0.0678    -0.0383    -0.0221    -0.0279</span></span>
 <span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a><span class="co">#&gt;                                                                                                                          </span></span>
 <span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------</span></span>
 <span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a><span class="co">#&gt;     y3_t8~1    y1_t9~1    y2_t9~1    y3_t9~1   y1_t10~1   y2_t10~1   y3_t10~1     delta2     delta3     delta4     delta5</span></span>
 <span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a><span class="co">#&gt;  ========== ========== ========== ========== ========== ========== ========== ========== ========== ========== ==========</span></span>
-<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a><span class="co">#&gt;     -0.0476    -0.0775    -0.0579    -0.0407     0.0131    -0.0118    -0.0043          .          .    -0.2806          .</span></span>
+<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a><span class="co">#&gt;     -0.0476    -0.0775    -0.0579    -0.0407     0.0131    -0.0118    -0.0043          .          .    -0.2807          .</span></span>
 <span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a><span class="co">#&gt;                                                                                                                      </span></span>
 <span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a><span class="co">#&gt;                                              ||--||  Transform                                                       </span></span>
 <span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a><span class="co">#&gt;  ---------- ---------- ---------- ---------- ||--|| ---------- ---------- ---------- ---------- ---------- ----------</span></span>
@@ -831,7 +830,7 @@ each effect (a1-a9) is estimated separately.</p>
 <p>The true autoregressive effects are given by</p>
 <pre><code>#&gt; [1] 0.6 0.6 0.6 0.2 0.2 0.2 0.2 0.2 0.2</code></pre>
 <p>while the estimates are</p>
-<pre><code>#&gt; [1] 0.4664992 0.4664992 0.4664992 0.1858526 0.1858526 0.1858526 0.1858526 0.1858526 0.1858526</code></pre>
+<pre><code>#&gt; [1] 0.4665209 0.4665209 0.4665209 0.1858669 0.1858669 0.1858669 0.1858669 0.1858669 0.1858669</code></pre>
 <p>The result is not perfect, but <strong>lessSEM</strong> correctly
 identified a change in the autoregressive parameter.</p>
 </div>
@@ -1475,10 +1474,6 @@ solutions.</p>
 <li>Arnold, M., Cancér, P. F., Estrada, E., &amp; Voelkle, M. C. (in
 submission). Score-Guided Recursive Partitioning of Continuous-Time
 Structural Equation Models.</li>
-<li>Bai, P., Safikhani, A., &amp; Michailidis, G. (2020). Multiple
-Change Points Detection in Low Rank and Sparse High Dimensional Vector
-Autoregressive Models. IEEE Transactions on Signal Processing, 68,
-3074–3089. <a href="https://doi.org/10.1109/TSP.2020.2993145" class="uri">https://doi.org/10.1109/TSP.2020.2993145</a></li>
 <li>Belzak, W. C. M., &amp; Bauer, D. J. (2020). Improving the
 assessment of measurement invariance: Using regularization to select
 anchor items and identify differential item functioning. Psychological
@@ -1520,6 +1515,10 @@ continuous time structural equation models: A network perspective.</li>
 <li>Pritikin, J. N., Hunter, M. D., &amp; Boker, S. M. (2015). Modular
 open-source software for Item Factor Analysis. Educational and
 Psychological Measurement, 75(3), 458-474</li>
+<li>Tibshirani, R., Saunders, M., Rosset, S., Zhu, J., &amp; Knight, K.
+(2005). Sparsity and smoothness via the fused lasso. Journal of the
+Royal Statistical Society: Series B (Statistical Methodology), 67(1),
+91–108. <a href="https://doi.org/10.1111/j.1467-9868.2005.00490.x" class="uri">https://doi.org/10.1111/j.1467-9868.2005.00490.x</a></li>
 <li>Voelkle, M. C., Oud, J. H. L., Davidov, E., &amp; Schmidt, P.
 (2012). An sem approach to continuous time modeling of panel data:
 Relating authoritarianism and anomia. Psychological Methods, 17(2),

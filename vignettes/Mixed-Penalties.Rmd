@@ -262,13 +262,15 @@ getTuningParameterConfiguration(regularizedSEMMixedPenalty = fitMp,
 
 
 Here is a short run-time comparison of ista and glmnet with the lasso-regularized 
-model from above: Five repetitions using ista took 43.788 seconds,
-while glmnet took 1.733 seconds. That is, if you 
+model from above: Five repetitions using ista took 24.509 seconds,
+while glmnet took 1.131 seconds. That is, if you 
 can use glmnet with your model, we recommend that you do.
 
 ## Bibliography
 
-- Geminiani, E., Marra, G., & Moustaki, I. (2021). Single- and multiple-group penalized factor analysis: A trust-region algorithm approach with integrated automatic multiple tuning parameter selection. Psychometrika, 86(1), 65–95. https://doi.org/10.1007/s11336-021-09751-8
+- Geminiani, E., Marra, G., & Moustaki, I. (2021). Single- and multiple-group penalized factor analysis: 
+A trust-region algorithm approach with integrated automatic multiple tuning parameter selection. 
+Psychometrika, 86(1), 65–95. https://doi.org/10.1007/s11336-021-09751-8
 
 
 
